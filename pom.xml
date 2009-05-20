@@ -3,11 +3,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.gu</groupId>
-    <name>simplecache</name>
+    <parent>
+        <groupId>com.gu</groupId>
+        <artifactId>guardian-shared-libraries</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <name>Simple Cache</name>
     <version>0.1-SNAPSHOT</version>
     <artifactId>simplecache</artifactId>
-
     <packaging>jar</packaging>
 
     <properties>
@@ -81,34 +85,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>1.6</source>
-                        <target>1.6</target>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>guardian-snapshots</id>
-            <name>Internal Snapshots</name>
-            <url>http://nexus.gudev.gnl:8081/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <scm>
-        <connection>scm:svn:svn://svn.gudev.gnl/GUsrc/simplecache/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/simplecache/trunk</developerConnection>
-    </scm>
 
 </project>
