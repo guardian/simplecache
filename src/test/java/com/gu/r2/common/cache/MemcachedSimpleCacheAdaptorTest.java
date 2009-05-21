@@ -20,40 +20,49 @@ import com.gu.r2.common.cache.memcached.MemcachedClient;
 
 public class MemcachedSimpleCacheAdaptorTest {
 	@Mock private MemcachedClient memcachedClient;
+	@Mock private KeyTranslator keyTranslator;
+
 	private MemcachedSimpleCacheAdaptor adaptor;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		adaptor = new MemcachedSimpleCacheAdaptor(memcachedClient);
+		adaptor = new MemcachedSimpleCacheAdaptor(memcachedClient, keyTranslator);
 	}
 
 	@Test
-	public void shouldPutToMemcachedUsingKey() throws Exception {
+	public void shouldPutToMemcachedUsingKeyTranslator() throws Exception {
+		when(keyTranslator.translate("some key")).thenReturn("translated key");
+
 		adaptor.putWithExpiry("some key", "value", 1, TimeUnit.SECONDS);
 
-		verify(memcachedClient).set(eq("some key"), argThat(hasProperty("value", is("value"))), eq(1));
+		verify(memcachedClient).set(eq("translated key"), argThat(hasProperty("value", is("value"))), eq(1));
 	}
 
 	@Test
 	public void putWithoutExpriryShouldUseADefaultExpiryTime() throws Exception {
+		when(keyTranslator.translate("some key")).thenReturn("translated key");
+
 		adaptor.put("some key", "value");
 
-		verify(memcachedClient).set(eq("some key"), argThat(hasProperty("value", is("value"))), eq((int)TimeUnit.DAYS.toSeconds(1)));
+		verify(memcachedClient).set(eq("translated key"), argThat(hasProperty("value", is("value"))), eq((int)TimeUnit.DAYS.toSeconds(1)));
 
 	}
 
 	@Test
 	public void shouldReturnNullCorrectlyFromGet() {
-		when(memcachedClient.get("some key")).thenReturn(null);
+		when(keyTranslator.translate("some key")).thenReturn("translated key");
+		when(memcachedClient.get("translated key")).thenReturn(null);
 
 		assertThat(adaptor.get("some key"), nullValue());
 	}
 
 	@Test
 	public void shouldReturnNullCorrectlyFromGetWithExpiry() {
-		when(memcachedClient.get("some key")).thenReturn(null);
+		when(keyTranslator.translate("some key")).thenReturn("translated key");
+		when(memcachedClient.get("translated key")).thenReturn(null);
 
 		assertThat(adaptor.getWithExpiry("some key"), nullValue());
 	}
+
 }

@@ -10,14 +10,16 @@ import com.gu.r2.common.cache.memcached.MemcachedClient;
 public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 	private static final Logger LOG = Logger.getLogger(MemcachedSimpleCacheAdaptor.class);
 	private final MemcachedClient client;
+	private final KeyTranslator keyTranslator;
 
-	public MemcachedSimpleCacheAdaptor(MemcachedClient client) {
+	public MemcachedSimpleCacheAdaptor(MemcachedClient client, KeyTranslator keyTranslator) {
         this.client = client;
+		this.keyTranslator = keyTranslator;
 	}
 
 	@Override
 	public CacheValueWithExpiryTime getWithExpiry(Object key) {
-		CacheValueWithExpiryTime cacheValueWithExpiryTime = (CacheValueWithExpiryTime) client.get(key.toString());
+		CacheValueWithExpiryTime cacheValueWithExpiryTime = (CacheValueWithExpiryTime) client.get(translate(key));
 
 		if (LOG.isTraceEnabled()) {
 		    if (cacheValueWithExpiryTime != null) {
@@ -55,7 +57,7 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 			LOG.trace(String.format("putWithExpiry(%s, %d, %s)", key, lifetime, units));
 		}
 
-	    client.set(key.toString(), new CacheValueWithExpiryTime(value, lifetime, units), (int) units.toSeconds(lifetime));
+	    client.set(translate(key), new CacheValueWithExpiryTime(value, lifetime, units), (int) units.toSeconds(lifetime));
 	}
 
     @Override
@@ -65,7 +67,10 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 
     @Override
     public void remove(Object key) {
-        client.remove(key.toString());
+        client.remove(translate(key));
     }
 
+	private String translate(Object key) {
+	    return keyTranslator.translate(key).toString();
+	}
 }
