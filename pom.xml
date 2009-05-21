@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.gu</groupId>
         <artifactId>guardian-shared-libraries</artifactId>
-        <version>1.4</version>
+        <version>1.5-SNAPSHOT</version>
     </parent>
 
     <name>Simple Cache</name>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
     <artifactId>simplecache</artifactId>
     <packaging>jar</packaging>
 
