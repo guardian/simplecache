@@ -1,23 +1,25 @@
 package com.gu.r2.common.cache;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.gu.r2.common.cache.memcached.MemcachedClient;
 
 public class MemcachedSimpleCacheAdaptorTest {
-	@MockitoAnnotations.Mock
-	private MemcachedClient memcachedClient;
-
-
+	@Mock private MemcachedClient memcachedClient;
 	private MemcachedSimpleCacheAdaptor adaptor;
 
 	@Before
@@ -43,14 +45,14 @@ public class MemcachedSimpleCacheAdaptorTest {
 
 	@Test
 	public void shouldReturnNullCorrectlyFromGet() {
-		stub(memcachedClient.get("some key")).toReturn(null);
+		when(memcachedClient.get("some key")).thenReturn(null);
 
 		assertThat(adaptor.get("some key"), nullValue());
 	}
 
 	@Test
 	public void shouldReturnNullCorrectlyFromGetWithExpiry() {
-		stub(memcachedClient.get("some key")).toReturn(null);
+		when(memcachedClient.get("some key")).thenReturn(null);
 
 		assertThat(adaptor.getWithExpiry("some key"), nullValue());
 	}

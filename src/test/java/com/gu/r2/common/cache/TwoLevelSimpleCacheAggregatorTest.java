@@ -8,7 +8,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
@@ -16,13 +16,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class TwoLevelSimpleCacheAggregatorTest {
-    @MockitoAnnotations.Mock
-    private SimpleCache firstLevelCache;
-    @MockitoAnnotations.Mock
-    private SimpleCache secondLevelCache;
+    @Mock private SimpleCache firstLevelCache;
+    @Mock private SimpleCache secondLevelCache;
     private TwoLevelSimpleCacheAggregator cache;
 
     @Before
@@ -33,7 +32,7 @@ public class TwoLevelSimpleCacheAggregatorTest {
 
     @Test
     public void getsSatisfiedByFirstLevelCacheShouldNotInvokeSecondLevel() throws Exception {
-        stub(firstLevelCache.getWithExpiry("key")).toReturn(new CacheValueWithExpiryTime("value", 0L));
+        when(firstLevelCache.getWithExpiry("key")).thenReturn(new CacheValueWithExpiryTime("value", 0L));
 
         assertThat(cache.get("key"), is( (Object) "value"));
         
@@ -43,11 +42,11 @@ public class TwoLevelSimpleCacheAggregatorTest {
     @Test
     public void getsUnsatisfiedByFirstLevelShouldAskSecondLevelAndPopulate() throws Exception {
 	    CacheValueWithExpiryTime valueObject = mock(CacheValueWithExpiryTime.class);
-	    stub(valueObject.getInstantaneousSecondsToExpiryTime()).toReturn(5L);
-	    stub(valueObject.getValue()).toReturn("value");
+	    when(valueObject.getInstantaneousSecondsToExpiryTime()).thenReturn(5L);
+	    when(valueObject.getValue()).thenReturn("value");
 
-	    stub(firstLevelCache.getWithExpiry("key")).toReturn(null);
-        stub(secondLevelCache.getWithExpiry("key")).toReturn(valueObject);
+	    when(firstLevelCache.getWithExpiry("key")).thenReturn(null);
+	    when(secondLevelCache.getWithExpiry("key")).thenReturn(valueObject);
 
         assertThat(cache.get("key"), is( (Object) "value"));
 
@@ -56,8 +55,8 @@ public class TwoLevelSimpleCacheAggregatorTest {
 
     @Test
     public void getsUnsatisfiedByBothShouldJustReturnNullAndNotPut() throws Exception {
-        stub(firstLevelCache.getWithExpiry("key")).toReturn(null);
-        stub(secondLevelCache.getWithExpiry("key")).toReturn(null);
+    	when(firstLevelCache.getWithExpiry("key")).thenReturn(null);
+    	when(secondLevelCache.getWithExpiry("key")).thenReturn(null);
 
         assertThat(cache.get("key"), is(nullValue()));
 
@@ -93,11 +92,11 @@ public class TwoLevelSimpleCacheAggregatorTest {
     public void shouldMissAndNotPromoteFromSecondLevelCacheWithZeroExpiryTime() {
     	// Cause you may make it eternal in the first level cache.
 	    CacheValueWithExpiryTime valueObject = mock(CacheValueWithExpiryTime.class);
-	    stub(valueObject.getInstantaneousSecondsToExpiryTime()).toReturn(0L);
-	    stub(valueObject.getValue()).toReturn("value");
+	    when(valueObject.getInstantaneousSecondsToExpiryTime()).thenReturn(0L);
+	    when(valueObject.getValue()).thenReturn("value");
 
-	    stub(firstLevelCache.getWithExpiry("key")).toReturn(null);
-        stub(secondLevelCache.getWithExpiry("key")).toReturn(valueObject);
+	    when(firstLevelCache.getWithExpiry("key")).thenReturn(null);
+	    when(secondLevelCache.getWithExpiry("key")).thenReturn(valueObject);
 
         assertThat(cache.get("key"), nullValue());
 
@@ -107,11 +106,11 @@ public class TwoLevelSimpleCacheAggregatorTest {
     @Test
     public void shouldMissAndNotPromoteFromSecondLevelCacheWithNegativeExpiryTime() {
     	CacheValueWithExpiryTime valueObject = mock(CacheValueWithExpiryTime.class);
-    	stub(valueObject.getInstantaneousSecondsToExpiryTime()).toReturn(-1L);
-    	stub(valueObject.getValue()).toReturn("value");
+    	when(valueObject.getInstantaneousSecondsToExpiryTime()).thenReturn(-1L);
+    	when(valueObject.getValue()).thenReturn("value");
 
-    	stub(firstLevelCache.getWithExpiry("key")).toReturn(null);
-    	stub(secondLevelCache.getWithExpiry("key")).toReturn(valueObject);
+    	when(firstLevelCache.getWithExpiry("key")).thenReturn(null);
+    	when(secondLevelCache.getWithExpiry("key")).thenReturn(valueObject);
 
     	assertThat(cache.get("key"), nullValue());
 
