@@ -24,6 +24,7 @@
         <mockito.version>1.6</mockito.version>
         <junit.version>4.4</junit.version>
         <slf4j.version>1.5.2</slf4j.version>
+        <spring.beans.version>2.5.5</spring.beans.version>
     </properties>
 
     <dependencies>
@@ -62,6 +63,11 @@
             <artifactId>performance-diagnostics</artifactId>
             <version>1.12-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.beans.version}</version>
+        </dependency>
 
         <!-- Test Dependencies -->
         <dependency>
@@ -76,7 +82,7 @@
             <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <dependency>                              
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>

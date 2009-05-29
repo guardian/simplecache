@@ -41,7 +41,7 @@ public class SpyMemcachedClientFactoryBean extends AbstractFactoryBean {
 	}
 
 	@Override
-	public Class<MemcachedClient> getObjectType() {
-		return MemcachedClient.class;
+	public Class<com.gu.cache.memcached.MemcachedClient> getObjectType() {
+		return com.gu.cache.memcached.MemcachedClient.class;
 	}
 }
