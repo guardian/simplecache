@@ -9,7 +9,7 @@
     </parent>
 
     <name>Simple Cache</name>
-    <version>1.13-SNAPSHOT</version>
+    <version>1.13</version>
     <artifactId>simplecache</artifactId>
     <packaging>jar</packaging>
 
@@ -96,4 +96,9 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+  <scm>
+    <connection>scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/tags/simplecache-1.13</connection>
+    <developerConnection>scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/tags/simplecache-1.13</developerConnection>
+  </scm>
 </project>
