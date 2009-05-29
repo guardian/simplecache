@@ -25,6 +25,7 @@
         <junit.version>4.4</junit.version>
         <slf4j.version>1.5.2</slf4j.version>
         <spring.beans.version>2.5.5</spring.beans.version>
+        <performance.diagnostics.version>1.12</performance.diagnostics.version>
     </properties>
 
     <dependencies>
@@ -61,7 +62,7 @@
         <dependency>
             <groupId>com.gu</groupId>
             <artifactId>performance-diagnostics</artifactId>
-            <version>1.13-SNAPSHOT</version>
+            <version>${performance.diagnostics.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -92,12 +93,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
             <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.gu</groupId>
-            <artifactId>test-support</artifactId>
-            <version>1.13-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

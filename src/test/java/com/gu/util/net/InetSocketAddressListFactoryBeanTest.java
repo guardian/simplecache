@@ -1,14 +1,12 @@
 package com.gu.util.net;
 
-import static com.gu.testsupport.matchers.Matchers.collectionContainingOnly;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import org.junit.Test;
 
 import java.net.InetSocketAddress;
 import java.util.List;
-
-import org.junit.Test;
-
-import com.gu.util.net.InetSocketAddressListFactoryBean;
 
 public class InetSocketAddressListFactoryBeanTest {
 
@@ -17,10 +15,11 @@ public class InetSocketAddressListFactoryBeanTest {
 		String addresses = "depression.int.gnl:999, despair.int.gnl:666, inferiority.int.gnl:8888";
 
 		List<InetSocketAddress> list = getAddressesFromFactory(addresses);
-
-		assertThat(list, collectionContainingOnly(new InetSocketAddress("depression.int.gnl", 999),
+        assertThat(list, hasItems(new InetSocketAddress("depression.int.gnl", 999),
 				new InetSocketAddress("despair.int.gnl", 666),
 				new InetSocketAddress("inferiority.int.gnl", 8888)));
+        assertThat(list.size(), equalTo(3));
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -28,7 +27,6 @@ public class InetSocketAddressListFactoryBeanTest {
 		InetSocketAddressListFactoryBean factory = new InetSocketAddressListFactoryBean(addresses);
 		factory.afterPropertiesSet();
 
-		List<InetSocketAddress> list = (List<InetSocketAddress>) factory.getObject();
-		return list;
+        return (List<InetSocketAddress>) factory.getObject();
 	}
 }
