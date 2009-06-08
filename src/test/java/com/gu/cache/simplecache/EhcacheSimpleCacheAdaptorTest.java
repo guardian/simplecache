@@ -1,30 +1,33 @@
 package com.gu.cache.simplecache;
 
-import java.util.concurrent.TimeUnit;
-
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import org.junit.Test;
+import org.junit.Before;
 
-import com.gu.cache.simplecache.EhcacheSimpleCacheAdaptor;
+import java.util.concurrent.TimeUnit;
 
 public class EhcacheSimpleCacheAdaptorTest {
-    @Test
-    public void shouldPutGetAndRemoveToEhcache() throws Exception {
+    private Ehcache ehcache;
+    private EhcacheSimpleCacheAdaptor adaptor;
 
+    @Before
+    public void setUp() throws Exception {
         CacheManager manager = new CacheManager();
 
         if (!manager.cacheExists("testCache")) {
             manager.addCache("testCache");
         }
 
-        Ehcache ehcache = manager.getCache("testCache");
+        ehcache = manager.getCache("testCache");
+        adaptor = new EhcacheSimpleCacheAdaptor(ehcache);
+    }
 
-        EhcacheSimpleCacheAdaptor adaptor = new EhcacheSimpleCacheAdaptor(ehcache);
-        
+    @Test
+    public void shouldPutGetAndRemoveToEhcache() throws Exception {
+
         assertThat(adaptor.get("key"), is(nullValue()));
         adaptor.put("key", "value");
         assertThat(adaptor.get("key"), is((Object)"value"));
@@ -35,20 +38,24 @@ public class EhcacheSimpleCacheAdaptorTest {
         assertThat(ehcache.get("key2").getTimeToLive(), is(1));
     }
 
-	@Test
+    @Test
 	public void shouldReturnNullCorrectlyFromGet() {
-		CacheManager manager = new CacheManager();
-
-		if (!manager.cacheExists("testCache")) {
-		    manager.addCache("testCache");
-		}
-
-		Ehcache ehcache = manager.getCache("testCache");
-
-		EhcacheSimpleCacheAdaptor adaptor = new EhcacheSimpleCacheAdaptor(ehcache);
-
 		assertThat(adaptor.get("key"), is(nullValue()));
 		assertThat(adaptor.getWithExpiry("key"), is(nullValue()));
 	}
 
+
+    @Test
+    public void shouldPutAndGetEvenWhenTheValuesAreNotSerlizable() throws Exception {
+        assertThat(adaptor.get("key"), is(nullValue()));
+        NonSerializableClass myObject = new NonSerializableClass();
+        adaptor.put("key", myObject);
+        assertThat(adaptor.get("key"), sameInstance((Object)myObject));
+        adaptor.remove("key");
+        assertThat(adaptor.get("key"), is(nullValue()));
+
+    }
+
+    private class NonSerializableClass {
+    }
 }

@@ -1,11 +1,10 @@
 package com.gu.cache.simplecache;
 
-import java.util.concurrent.TimeUnit;
-
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-
 import org.apache.log4j.Logger;
+
+import java.util.concurrent.TimeUnit;
 
 public class EhcacheSimpleCacheAdaptor implements SimpleCache {
 	private static final Logger LOG = Logger.getLogger(EhcacheSimpleCacheAdaptor.class);
@@ -27,10 +26,11 @@ public class EhcacheSimpleCacheAdaptor implements SimpleCache {
 		}
 
 		long expirationTime = element.getExpirationTime();
-		CacheValueWithExpiryTime cacheValueWithExpiryTime = new CacheValueWithExpiryTime(element.getValue(), expirationTime);
+		CacheValueWithExpiryTime cacheValueWithExpiryTime = new CacheValueWithExpiryTime(element.getObjectValue(), expirationTime);
 
 		if (LOG.isTraceEnabled()) {
-			LOG.trace(String.format("getWithExpiry(%s)[%ss] - HIT", key, cacheValueWithExpiryTime.getInstantaneousSecondsToExpiryTime()));
+			LOG.trace(String.format("getWithExpiry(%s)[%ss] - HIT", key,
+                    cacheValueWithExpiryTime.getInstantaneousSecondsToExpiryTime()));
 		}
 
 		return cacheValueWithExpiryTime;
