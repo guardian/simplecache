@@ -11,7 +11,9 @@ public class SoftReferenceSimpleCache implements SimpleCache {
 	private static final Logger LOG = Logger.getLogger(SoftReferenceSimpleCache.class); 
 
     private final ConcurrentMap<Object, CacheValueWithExpiryTime> cache;
+
 	private CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory = new CacheValueWithExpiryTimeFactory();
+	private String name;
 
     public SoftReferenceSimpleCache() {
         cache = new MapMaker()
@@ -20,6 +22,14 @@ public class SoftReferenceSimpleCache implements SimpleCache {
                 .makeMap();
     }
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
     @Override
     public Object get(Object key) {
         CacheValueWithExpiryTime cacheValueWithExpiryTime = getWithExpiry(key);
