@@ -11,6 +11,8 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 	private static final Logger LOG = Logger.getLogger(MemcachedSimpleCacheAdaptor.class);
 	private final MemcachedClient client;
 	private final KeyTranslator keyTranslator;
+	private final CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory =
+		new CacheValueWithExpiryTimeFactory();
 
 	public MemcachedSimpleCacheAdaptor(MemcachedClient client, KeyTranslator keyTranslator) {
         this.client = client;
@@ -57,13 +59,8 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 			LOG.trace(String.format("putWithExpiry(%s, %d, %s)", key, lifetime, units));
 		}
 
-	    client.set(translate(key), new CacheValueWithExpiryTime(value, lifetime, units), (int) units.toSeconds(lifetime));
+	    client.set(translate(key), cacheValueWithExpiryTimeFactory.create(value, lifetime, units), (int) units.toSeconds(lifetime));
 	}
-
-    @Override
-    public void put(Object key, Object value) {
-	    putWithExpiry(key, value, 24, TimeUnit.HOURS);
-    }
 
     @Override
     public void remove(Object key) {

@@ -11,17 +11,18 @@ public class CacheValueWithExpiryTime implements Serializable {
 	private Object value;
 	private long absoluteExpiryTime;
 
-	public CacheValueWithExpiryTime(Object value, long absoluteExpiryTime) {
+	// Use CacheValueWithExpiryTimeFactory to create these
+	CacheValueWithExpiryTime(Object value, long absoluteExpiryTime) {
 		this.value = value;
 		this.absoluteExpiryTime = absoluteExpiryTime;
 	}
 
-	public CacheValueWithExpiryTime(Object value, long duration, TimeUnit timeUnit) {
-		this(value, System.currentTimeMillis() + timeUnit.toMillis(duration));
-	}
-
 	public Object getValue() {
 		return value;
+	}
+	
+	public boolean isExpired() {
+		return absoluteExpiryTime <= System.currentTimeMillis();
 	}
 
 	public long getInstantaneousSecondsToExpiryTime() {

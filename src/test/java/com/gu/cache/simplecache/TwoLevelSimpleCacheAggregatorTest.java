@@ -64,16 +64,8 @@ public class TwoLevelSimpleCacheAggregatorTest {
 
         assertThat(cache.get("key"), is(nullValue()));
 
-        verify(firstLevelCache, never()).put("key", null);
+        verify(firstLevelCache, never()).putWithExpiry("key", null, 1, TimeUnit.DAYS);
 
-    }
-
-    @Test
-    public void putsShouldPutToBothLevelCaches() throws Exception {
-        cache.put("key", "value");
-
-        verify(firstLevelCache).put("key", "value");
-        verify(secondLevelCache).put("key", "value");
     }
 
     @Test

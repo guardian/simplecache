@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit;
 public class EhcacheSimpleCacheAdaptor implements SimpleCache {
 	private static final Logger LOG = Logger.getLogger(EhcacheSimpleCacheAdaptor.class);
     private final Ehcache cache;
+    private final CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory =
+    	new CacheValueWithExpiryTimeFactory();
 
     public EhcacheSimpleCacheAdaptor(Ehcache cache) {
         this.cache = cache;
@@ -26,7 +28,8 @@ public class EhcacheSimpleCacheAdaptor implements SimpleCache {
 		}
 
 		long expirationTime = element.getExpirationTime();
-		CacheValueWithExpiryTime cacheValueWithExpiryTime = new CacheValueWithExpiryTime(element.getObjectValue(), expirationTime);
+		CacheValueWithExpiryTime cacheValueWithExpiryTime = 
+			cacheValueWithExpiryTimeFactory.create(element.getObjectValue(), expirationTime);
 
 		if (LOG.isTraceEnabled()) {
 			LOG.trace(String.format("getWithExpiry(%s)[%ss] - HIT", key,
@@ -45,14 +48,6 @@ public class EhcacheSimpleCacheAdaptor implements SimpleCache {
 	    }
 
 	    return cacheValueWithExpiryTime.getValue();
-    }
-
-    @Override
-    public void put(Object key, Object value) {
-	    if (LOG.isTraceEnabled()) {
-		    LOG.trace(String.format("put(%s)", key));
-	    }
-        cache.put(new Element(key, value));
     }
 
     @Override

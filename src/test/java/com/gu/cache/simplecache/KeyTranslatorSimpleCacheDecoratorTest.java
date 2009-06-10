@@ -23,11 +23,6 @@ public class KeyTranslatorSimpleCacheDecoratorTest {
 		when(keyTranslator.translate("key")).thenReturn("translated key");		
 	}
 
-	@Test public void shouldTranslateKeyAndDelegatePutToSimpleCacheDelegate() {
-		simpleCacheKeyFlatteningDecorator.put("key", "value");
-		verify(simpleCache).put("translated key", "value");
-	}
-	
 	@Test public void shouldTranslateKeyAndDelegateGet() {
 		simpleCacheKeyFlatteningDecorator.get("key");
 		verify(simpleCache).get("translated key");

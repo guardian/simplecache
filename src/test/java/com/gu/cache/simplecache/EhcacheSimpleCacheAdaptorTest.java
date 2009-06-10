@@ -29,7 +29,7 @@ public class EhcacheSimpleCacheAdaptorTest {
     public void shouldPutGetAndRemoveToEhcache() throws Exception {
 
         assertThat(adaptor.get("key"), is(nullValue()));
-        adaptor.put("key", "value");
+        adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
         assertThat(adaptor.get("key"), is((Object)"value"));
         adaptor.remove("key");
         assertThat(adaptor.get("key"), is(nullValue()));
@@ -49,7 +49,7 @@ public class EhcacheSimpleCacheAdaptorTest {
     public void shouldPutAndGetEvenWhenTheValuesAreNotSerlizable() throws Exception {
         assertThat(adaptor.get("key"), is(nullValue()));
         NonSerializableClass myObject = new NonSerializableClass();
-        adaptor.put("key", myObject);
+        adaptor.putWithExpiry("key", myObject, 1, TimeUnit.DAYS);
         assertThat(adaptor.get("key"), sameInstance((Object)myObject));
         adaptor.remove("key");
         assertThat(adaptor.get("key"), is(nullValue()));

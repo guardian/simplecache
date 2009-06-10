@@ -42,16 +42,6 @@ public class MemcachedSimpleCacheAdaptorTest {
 	}
 
 	@Test
-	public void putWithoutExpriryShouldUseADefaultExpiryTime() throws Exception {
-		when(keyTranslator.translate("some key")).thenReturn("translated key");
-
-		adaptor.put("some key", "value");
-
-		verify(memcachedClient).set(eq("translated key"), argThat(hasProperty("value", is("value"))), eq((int)TimeUnit.DAYS.toSeconds(1)));
-
-	}
-
-	@Test
 	public void shouldReturnNullCorrectlyFromGet() {
 		when(keyTranslator.translate("some key")).thenReturn("translated key");
 		when(memcachedClient.get("translated key")).thenReturn(null);

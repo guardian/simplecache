@@ -36,16 +36,6 @@ public class TwoLevelSimpleCacheAggregator implements SimpleCache {
     }
 
     @Override
-    public void put(Object key, Object value) {
-	    if (LOG.isTraceEnabled()) {
-		    LOG.trace(String.format("put(%s)", key));
-	    }
-
-        firstLevelCache.put(key, value);
-        secondLevelCache.put(key, value);
-    }
-
-    @Override
     public void putWithExpiry(Object key, Object value, long lifetime, TimeUnit units) {
 	    if (LOG.isTraceEnabled()) {
 		    LOG.trace(String.format("putWithExpiry(%s, %d, %s)", key, lifetime, units));

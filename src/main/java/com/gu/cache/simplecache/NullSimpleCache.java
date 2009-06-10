@@ -15,10 +15,6 @@ public class NullSimpleCache implements SimpleCache {
 	}
 
 	@Override
-	public void put(Object key, Object value) {
-	}
-
-	@Override
 	public void putWithExpiry(Object key, Object value, long lifetime, TimeUnit units) {
 	}
 

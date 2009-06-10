@@ -27,13 +27,6 @@ public class KeyTranslatorSimpleCacheDecorator implements SimpleCache {
 	}
 
 	@Override
-	public void put(Object key, Object value) {
-		Object translatedKey = keyTranslator.translate(key);
-		delegate.put(translatedKey, value);
-
-	}
-
-	@Override
 	public void putWithExpiry(Object key, Object value, long lifetime,
 			TimeUnit units) {
 		Object translatedKey = keyTranslator.translate(key);
