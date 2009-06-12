@@ -48,12 +48,20 @@ public class TwoLevelSimpleCacheAggregator implements SimpleCache {
     @Override
     public void remove(Object key) {
 	    if (LOG.isTraceEnabled()) {
-		    LOG.trace(String.format("remove(%s) - MISS", key));
+		    LOG.trace(String.format("remove(%s)", key));
 	    }
 
+	    secondLevelCache.remove(key);
         firstLevelCache.remove(key);
-        secondLevelCache.remove(key);
     }
+
+	@Override
+	public void removeAll() {
+	    LOG.debug("removeAll()");
+
+	    secondLevelCache.removeAll();
+		firstLevelCache.removeAll();
+	}
 
 	@Override
 	public CacheValueWithExpiryTime getWithExpiry(Object key) {
@@ -99,4 +107,5 @@ public class TwoLevelSimpleCacheAggregator implements SimpleCache {
 
 	    return cacheValueWithExpiryTime;
 	}
+
 }

@@ -86,6 +86,13 @@ public class SoftReferenceSimpleCache implements SimpleCache {
         cache.remove(key);
     }
 
+    @Override
+    public void removeAll() {
+    	LOG.debug("removeAll");
+
+    	cache.clear();
+    }
+
 	public void setCacheValueWithExpiryFactory(CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory) {
 		this.cacheValueWithExpiryTimeFactory = cacheValueWithExpiryTimeFactory;
 	}

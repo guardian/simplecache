@@ -22,4 +22,8 @@ public class NullSimpleCache implements SimpleCache {
 	public void remove(Object key) {
 	}
 
+	@Override
+	public void removeAll() {
+	}
+
 }

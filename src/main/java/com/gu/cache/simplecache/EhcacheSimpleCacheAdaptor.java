@@ -68,4 +68,11 @@ public class EhcacheSimpleCacheAdaptor implements SimpleCache {
 
         cache.remove(key);
     }
+
+    @Override
+    public void removeAll() {
+	    LOG.debug("removeAll");
+
+    	cache.removeAll();
+    }
 }

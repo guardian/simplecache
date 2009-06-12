@@ -27,7 +27,6 @@ public class EhcacheSimpleCacheAdaptorTest {
 
     @Test
     public void shouldPutGetAndRemoveToEhcache() throws Exception {
-
         assertThat(adaptor.get("key"), is(nullValue()));
         adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
         assertThat(adaptor.get("key"), is((Object)"value"));
@@ -37,6 +36,16 @@ public class EhcacheSimpleCacheAdaptorTest {
         adaptor.putWithExpiry("key2", "value", 1000, TimeUnit.MILLISECONDS);
         assertThat(ehcache.get("key2").getTimeToLive(), is(1));
     }
+    
+    @Test
+    public void shouldRemoveAllFromEhcache() throws Exception {
+    	adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	adaptor.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+    	
+    	adaptor.removeAll();
+    	
+    	assertThat(ehcache.getSize(), is(0));
+    }
 
     @Test
 	public void shouldReturnNullCorrectlyFromGet() {
@@ -44,18 +53,15 @@ public class EhcacheSimpleCacheAdaptorTest {
 		assertThat(adaptor.getWithExpiry("key"), is(nullValue()));
 	}
 
-
     @Test
     public void shouldPutAndGetEvenWhenTheValuesAreNotSerlizable() throws Exception {
         assertThat(adaptor.get("key"), is(nullValue()));
-        NonSerializableClass myObject = new NonSerializableClass();
-        adaptor.putWithExpiry("key", myObject, 1, TimeUnit.DAYS);
-        assertThat(adaptor.get("key"), sameInstance((Object)myObject));
+
+        Object nonSerializable = new Object();
+        adaptor.putWithExpiry("key", nonSerializable, 1, TimeUnit.DAYS);
+        assertThat(adaptor.get("key"), sameInstance((Object)nonSerializable));
+        
         adaptor.remove("key");
         assertThat(adaptor.get("key"), is(nullValue()));
-
-    }
-
-    private class NonSerializableClass {
     }
 }

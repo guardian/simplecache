@@ -39,4 +39,9 @@ public class KeyTranslatorSimpleCacheDecorator implements SimpleCache {
 		delegate.remove(translatedKey);
 	}
 
+	@Override
+	public void removeAll() {
+		delegate.removeAll();
+	}
+
 }

@@ -53,4 +53,14 @@ public class SoftReferenceSimpleCacheTest {
     	assertThat(cache.get("key"), is(nullValue()));
     }
 
+    @Test
+    public void shouldRemoveAllFromSoftReferenceCache() throws Exception {
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+    	
+    	cache.removeAll();
+    	
+    	assertThat(cache.get("key"), is(nullValue()));
+    	assertThat(cache.get("another key"), is(nullValue()));
+    }
 }

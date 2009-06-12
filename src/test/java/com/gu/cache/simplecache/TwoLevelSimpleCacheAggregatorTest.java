@@ -6,16 +6,13 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -80,10 +77,25 @@ public class TwoLevelSimpleCacheAggregatorTest {
     public void removeShouldRemoveFromBothCaches() throws Exception {
         cache.remove("key");
 
-        verify(firstLevelCache).remove("key");
-        verify(secondLevelCache).remove("key");
+        // the second level cache is cleared first, to avoid promotion
+        // of items from the second level to a newly clear first level
+        
+        InOrder inOrder = inOrder(firstLevelCache, secondLevelCache);
+        
+        inOrder.verify(secondLevelCache).remove("key");
+        inOrder.verify(firstLevelCache).remove("key");
     }
 
+    @Test
+    public void removeShouldRemoveAllFromBothCaches() throws Exception {
+        cache.removeAll();
+
+        InOrder inOrder = inOrder(firstLevelCache, secondLevelCache);
+        
+        inOrder.verify(secondLevelCache).removeAll();
+        inOrder.verify(firstLevelCache).removeAll();
+    }
+    
     @Test
     public void shouldMissAndNotPromoteFromSecondLevelCacheWithZeroExpiryTime() {
     	// Cause you may make it eternal in the first level cache.

@@ -70,4 +70,9 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 	private String translate(Object key) {
 	    return keyTranslator.translate(key).toString();
 	}
+
+	@Override
+	public void removeAll() {
+		LOG.warn("removeAll ignored on memcached");
+	}
 }

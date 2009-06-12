@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.concurrent.TimeUnit;
@@ -16,8 +17,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.gu.cache.simplecache.KeyTranslator;
-import com.gu.cache.simplecache.MemcachedSimpleCacheAdaptor;
 import com.gu.cache.memcached.MemcachedClient;
 
 public class MemcachedSimpleCacheAdaptorTest {
@@ -55,6 +54,13 @@ public class MemcachedSimpleCacheAdaptorTest {
 		when(memcachedClient.get("translated key")).thenReturn(null);
 
 		assertThat(adaptor.getWithExpiry("some key"), nullValue());
+	}
+	
+	@Test
+	public void shouldNotRemoveAllFromMemcachedBecauseWeNeverWantToAccidentlyClearMemcached() {
+		adaptor.removeAll();
+		
+		verifyZeroInteractions(memcachedClient);
 	}
 
 }

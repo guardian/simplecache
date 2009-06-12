@@ -18,4 +18,6 @@ public interface SimpleCache {
     void putWithExpiry(Object key, Object value, long lifetime, TimeUnit units);
 
     void remove(Object key);
+
+    void removeAll();
 }
