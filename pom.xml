@@ -9,7 +9,7 @@
     </parent>
 
     <name>Simple Cache</name>
-    <version>1.18</version>
+    <version>1.19-SNAPSHOT</version>
     <artifactId>simplecache</artifactId>
     <packaging>jar</packaging>
 
@@ -101,9 +101,4 @@
         	<version>1.0-rc2</version>
         </dependency>
     </dependencies>
-
-  <scm>
-    <connection>scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/tags/simplecache-1.18</connection>
-    <developerConnection>scm:svn:svn+ssh://svn.gudev.gnl/home/svn/repository/GUsrc/guardian-shared-libraries/tags/simplecache-1.18</developerConnection>
-  </scm>
 </project>
