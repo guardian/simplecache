@@ -4,8 +4,8 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
 
@@ -64,4 +64,26 @@ public class EhcacheSimpleCacheAdaptorTest {
         adaptor.remove("key");
         assertThat(adaptor.get("key"), is(nullValue()));
     }
+    
+    @Test
+    public void shouldCountGetsAndRemoved() throws Exception {
+        assertThat(adaptor.getStatistics().getNumEntries(), is(0L));
+        assertThat(adaptor.getStatistics().getNumHits(), is(0L));
+        assertThat(adaptor.getStatistics().getNumMisses(), is(0L));
+
+        adaptor.get("key");
+
+        assertThat(adaptor.getStatistics().getNumEntries(), is(0L));
+        assertThat(adaptor.getStatistics().getNumHits(), is(0L));
+        assertThat(adaptor.getStatistics().getNumMisses(), is(1L));
+
+        adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+        adaptor.get("key");
+        adaptor.get("key");
+
+        assertThat(adaptor.getStatistics().getNumEntries(), is(1L));
+        assertThat(adaptor.getStatistics().getNumHits(), is(2L));
+        assertThat(adaptor.getStatistics().getNumMisses(), is(1L));
+    }
+
 }

@@ -1,12 +1,14 @@
 package com.gu.cache.simplecache;
 
+import com.gu.cache.simplecache.statistics.Statistics;
+import com.gu.cache.simplecache.statistics.StatisticsProvider;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
-public class EhcacheSimpleCacheAdaptor implements SimpleCache {
+public class EhcacheSimpleCacheAdaptor implements SimpleCache, StatisticsProvider {
 	private static final Logger LOG = Logger.getLogger(EhcacheSimpleCacheAdaptor.class);
     private final Ehcache cache;
     private final CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory =
@@ -74,5 +76,11 @@ public class EhcacheSimpleCacheAdaptor implements SimpleCache {
 	    LOG.debug("removeAll");
 
     	cache.removeAll();
+    }
+
+    @Override
+    public Statistics getStatistics() {
+        net.sf.ehcache.Statistics ehCacheStats = cache.getStatistics();
+        return new Statistics(cache.getSize(), ehCacheStats.getCacheHits(), ehCacheStats.getCacheMisses());
     }
 }

@@ -1,19 +1,22 @@
 package com.gu.cache.simplecache;
 
+import com.google.common.collect.MapMaker;
+import com.gu.cache.simplecache.statistics.Statistics;
+import com.gu.cache.simplecache.statistics.StatisticsCounter;
+import com.gu.cache.simplecache.statistics.StatisticsProvider;
+import org.apache.log4j.Logger;
+
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-
-import com.google.common.collect.MapMaker;
-
-public class SoftReferenceSimpleCache implements SimpleCache {
+public class SoftReferenceSimpleCache implements SimpleCache, StatisticsProvider {
 	private static final Logger LOG = Logger.getLogger(SoftReferenceSimpleCache.class); 
 
     private final ConcurrentMap<Object, CacheValueWithExpiryTime> cache;
 
 	private CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory = new CacheValueWithExpiryTimeFactory();
 	private String name;
+    private StatisticsCounter count = new StatisticsCounter();
 
     public SoftReferenceSimpleCache() {
         cache = new MapMaker()
@@ -49,21 +52,27 @@ public class SoftReferenceSimpleCache implements SimpleCache {
         	if (LOG.isTraceEnabled()) {
         		LOG.trace("getWithExpiry(" + key + ") - MISS");
         	}
+
+            count.miss();
     		return null;
     	}
     	
     	if (cacheValueWithExpiryTime.isExpired()) {
         	if (LOG.isDebugEnabled()) {
-        		LOG.debug("getWithExpiry(" + key + ") - removing and ignoring expired entry");
+        		LOG.debug("getWithExpiry(" + key + ") - MISS (removing and ignoring expired entry)");
         	}
     		cache.remove(key);
+
+            count.miss();
     		return null;
     	}
     	
     	if (LOG.isTraceEnabled()) {
     		LOG.trace("getWithExpiry(" + key + ") - HIT");
     	}
-    	
+
+        count.hit();
+
     	return cacheValueWithExpiryTime;
     }
 
@@ -97,4 +106,8 @@ public class SoftReferenceSimpleCache implements SimpleCache {
 		this.cacheValueWithExpiryTimeFactory = cacheValueWithExpiryTimeFactory;
 	}
 
+    @Override
+    public Statistics getStatistics() {
+        return count.asStatistics(cache.size());
+    }
 }

@@ -1,16 +1,14 @@
 package com.gu.cache.simplecache;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.when;
-
-import java.util.concurrent.TimeUnit;
-
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import static org.mockito.Mockito.*;
 import org.mockito.runners.MockitoJUnit44Runner;
+
+import java.util.concurrent.TimeUnit;
 
 @RunWith(MockitoJUnit44Runner.class)
 public class SoftReferenceSimpleCacheTest {
@@ -63,4 +61,26 @@ public class SoftReferenceSimpleCacheTest {
     	assertThat(cache.get("key"), is(nullValue()));
     	assertThat(cache.get("another key"), is(nullValue()));
     }
+
+    @Test
+    public void shouldCountGetsAndRemoved() throws Exception {
+        assertThat(cache.getStatistics().getNumEntries(), is(0L));
+        assertThat(cache.getStatistics().getNumHits(), is(0L));
+        assertThat(cache.getStatistics().getNumMisses(), is(0L));
+
+        cache.get("key");
+
+        assertThat(cache.getStatistics().getNumEntries(), is(0L));
+        assertThat(cache.getStatistics().getNumHits(), is(0L));
+        assertThat(cache.getStatistics().getNumMisses(), is(1L));
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+        cache.get("key");
+        cache.get("key");
+
+        assertThat(cache.getStatistics().getNumEntries(), is(1L));
+        assertThat(cache.getStatistics().getNumHits(), is(2L));
+        assertThat(cache.getStatistics().getNumMisses(), is(1L));
+    }
+
 }
