@@ -25,7 +25,7 @@
         <junit.version>4.4</junit.version>
         <slf4j.version>1.5.2</slf4j.version>
         <spring.beans.version>2.5.5</spring.beans.version>
-        <performance.diagnostics.version>1.12</performance.diagnostics.version>
+        <performance.diagnostics.version>1.18</performance.diagnostics.version>
     </properties>
 
     <dependencies>

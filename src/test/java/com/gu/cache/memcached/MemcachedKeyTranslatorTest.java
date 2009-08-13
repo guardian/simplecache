@@ -10,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.gu.cache.memcached.MemcachedKeyTranslator;
-import com.gu.manifest.Manifest;
+import com.gu.manifest.components.Manifest;
 
 public class MemcachedKeyTranslatorTest {
 	private MemcachedKeyTranslator translator;
