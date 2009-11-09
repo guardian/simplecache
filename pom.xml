@@ -26,6 +26,7 @@
         <slf4j.version>1.5.2</slf4j.version>
         <spring.beans.version>2.5.5</spring.beans.version>
         <performance.diagnostics.version>1.18</performance.diagnostics.version>
+        <servlet.api.version>2.5</servlet.api.version>
     </properties>
 
     <dependencies>
@@ -70,6 +71,14 @@
             <version>${spring.beans.version}</version>
         </dependency>
 
+        <!-- Provided Dependencies -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>${servlet.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
         <!-- Test Dependencies -->
         <dependency>
             <groupId>org.hamcrest</groupId>
