@@ -1,10 +1,9 @@
 package com.gu.cache.simplecache;
 
-import java.util.concurrent.TimeUnit;
-
+import com.gu.cache.memcached.MemcachedClient;
 import org.apache.log4j.Logger;
 
-import com.gu.cache.memcached.MemcachedClient;
+import java.util.concurrent.TimeUnit;
 
 
 public class MemcachedSimpleCacheAdaptor implements SimpleCache {
@@ -13,6 +12,15 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 	private final KeyTranslator keyTranslator;
 	private final CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory =
 		new CacheValueWithExpiryTimeFactory();
+
+
+    /**
+     * The behaviour of the memcached adaptor if <code>serveStaleEnabled</code> is set to true is as follows:
+     * <code>putWithExpiry()</code> will tell memcached to never expire the object.
+     * <code>getWithExpiry()</code> will always return the object if retrieved from memcached.
+     * <code>get()</code> will only return the object if it is retrieved from memcached and it is not stale.
+     */
+    private boolean serveStaleEnabled = false;
 
 	public MemcachedSimpleCacheAdaptor(MemcachedClient client, KeyTranslator keyTranslator) {
         this.client = client;
@@ -38,7 +46,7 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
     public Object get(Object key) {
 	    final CacheValueWithExpiryTime cacheValueWithExpiryTime = getWithExpiry(key);
 
-	    if (cacheValueWithExpiryTime == null) {
+	    if (cacheValueWithExpiryTime == null || cacheValueWithExpiryTime.isExpired()) {
 		    if (LOG.isTraceEnabled()) {
 			    LOG.trace(String.format("get(%s) - MISS", key));
 		    }
@@ -49,7 +57,6 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 		    LOG.trace(String.format("get(%s) - HIT", key));
 	    }
 
-
 	    return cacheValueWithExpiryTime.getValue();
     }
 
@@ -59,7 +66,10 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 			LOG.trace(String.format("putWithExpiry(%s, %d, %s)", key, lifetime, units));
 		}
 
-	    client.set(translate(key), cacheValueWithExpiryTimeFactory.create(value, lifetime, units), (int) units.toSeconds(lifetime));
+        int memcachedExpiryTime = isServeStaleEnabled() ? 0 : (int) units.toSeconds(lifetime);
+
+        client.set(translate(key), cacheValueWithExpiryTimeFactory.create(value, lifetime, units), memcachedExpiryTime);
+        
 	}
 
     @Override
@@ -75,4 +85,12 @@ public class MemcachedSimpleCacheAdaptor implements SimpleCache {
 	public void removeAll() {
 		LOG.warn("removeAll ignored on memcached");
 	}
+
+    public void setServeStaleEnabled(boolean serveStaleEnabled) {
+        this.serveStaleEnabled = serveStaleEnabled;
+    }
+
+    public boolean isServeStaleEnabled() {
+        return serveStaleEnabled;
+    }
 }
