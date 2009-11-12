@@ -3,6 +3,8 @@ package com.gu.util.net;
 import static java.lang.Integer.parseInt;
 
 import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -32,10 +34,21 @@ public class InetSocketAddressListFactoryBean extends AbstractFactoryBean {
 			inetSocketAddressList.add(new InetSocketAddress(addr,port));
 		}
 
-		return inetSocketAddressList;
+        sortAddresses(inetSocketAddressList);
+
+        return inetSocketAddressList;
 	}
 
-	@SuppressWarnings("unchecked")
+    private void sortAddresses(List<InetSocketAddress> inetSocketAddressList) {
+        Collections.sort(inetSocketAddressList, new Comparator<InetSocketAddress>() {
+            @Override
+            public int compare(InetSocketAddress o1, InetSocketAddress o2) {
+                return o1.toString().compareTo(o2.toString());
+            }
+        });
+    }
+
+    @SuppressWarnings("unchecked")
 	@Override
 	public Class getObjectType() {
 		return List.class;

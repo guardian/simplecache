@@ -22,6 +22,20 @@ public class InetSocketAddressListFactoryBeanTest {
 
 	}
 
+    @Test
+	public void shouldGiveAConsistentlyOrderedListWhateverOrderAddessesAreInTheInputList() throws Exception {
+		String addresses = "depression.int.gnl:999, despair.int.gnl:666, inferiority.int.gnl:8888";
+		String reorderedAddresses = "despair.int.gnl:666, depression.int.gnl:999, inferiority.int.gnl:8888";
+
+		List<InetSocketAddress> listFromAddresses = getAddressesFromFactory(addresses);
+		List<InetSocketAddress> listFromReorderedAddresses = getAddressesFromFactory(reorderedAddresses);
+
+        for (int i = 0; i < listFromAddresses.size(); i++) {
+            assertThat(listFromAddresses.get(i), equalTo(listFromReorderedAddresses.get(i)));
+        }
+
+	}
+
 	@SuppressWarnings("unchecked")
 	private List<InetSocketAddress> getAddressesFromFactory(String addresses) throws Exception {
 		InetSocketAddressListFactoryBean factory = new InetSocketAddressListFactoryBean(addresses);
