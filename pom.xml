@@ -9,7 +9,7 @@
     </parent>
 
     <name>Simple Cache</name>
-    <version>1.24</version>
+    <version>1.25-SNAPSHOT</version>
     <artifactId>simplecache</artifactId>
     <packaging>jar</packaging>
 
