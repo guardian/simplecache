@@ -1,12 +1,11 @@
 package com.gu.cache.memcached;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
+import com.gu.cache.simplecache.KeyTranslator;
+import com.gu.management.manifest.Manifest;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.gu.cache.simplecache.KeyTranslator;
-import com.gu.manifest.components.Manifest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class MemcachedKeyTranslator implements KeyTranslator {
 	private final Manifest manifest;

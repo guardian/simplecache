@@ -1,18 +1,16 @@
 package com.gu.cache.memcached;
 
+import com.gu.management.timing.TimingMetric;
+import net.spy.memcached.MemcachedClientIF;
+import net.spy.memcached.MemcachedNode;
+import org.apache.log4j.Logger;
+
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import net.spy.memcached.MemcachedClientIF;
-import net.spy.memcached.MemcachedNode;
-
-import org.apache.log4j.Logger;
-
-import com.gu.performance.diagnostics.metrics.TimingMetric;
 
 public class SpyMemcachedClientAdaptor implements MemcachedClient {
 	private static final Logger LOG = Logger.getLogger(SpyMemcachedClientAdaptor.class);

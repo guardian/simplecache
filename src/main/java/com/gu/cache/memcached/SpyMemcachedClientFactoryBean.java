@@ -1,15 +1,14 @@
 package com.gu.cache.memcached;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-
+import com.gu.management.timing.TimingMetric;
 import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.MemcachedClient;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
-import com.gu.performance.diagnostics.metrics.TimingMetric;
+import java.net.InetSocketAddress;
+import java.util.List;
+
 
 public class SpyMemcachedClientFactoryBean extends AbstractFactoryBean {
 

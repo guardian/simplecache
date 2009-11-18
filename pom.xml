@@ -25,7 +25,7 @@
         <junit.version>4.4</junit.version>
         <slf4j.version>1.5.2</slf4j.version>
         <spring.beans.version>2.5.5</spring.beans.version>
-        <performance.diagnostics.version>1.18</performance.diagnostics.version>
+        <management.version>1.0</management.version>
         <servlet.api.version>2.5</servlet.api.version>
     </properties>
 
@@ -62,8 +62,8 @@
         </dependency>
         <dependency>
             <groupId>com.gu</groupId>
-            <artifactId>performance-diagnostics</artifactId>
-            <version>${performance.diagnostics.version}</version>
+            <artifactId>management-core</artifactId>
+            <version>${management.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

@@ -1,16 +1,14 @@
 package com.gu.cache.memcached;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
-
+import com.gu.management.manifest.Manifest;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.gu.cache.memcached.MemcachedKeyTranslator;
-import com.gu.manifest.components.Manifest;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 
 public class MemcachedKeyTranslatorTest {
 	private MemcachedKeyTranslator translator;

@@ -1,31 +1,27 @@
 package com.gu.cache.memcached;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.util.concurrent.Callable;
-
+import com.gu.management.timing.TimingMetric;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.gu.performance.diagnostics.metrics.TimingMetric;
+import java.util.concurrent.Callable;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class MemcachedLoggingStopWatchTest {
 
 	private @Mock Logger log;
-	private @Mock TimingMetric metric;
+	private @Mock
+    TimingMetric metric;
 
 	@Before
 	public void setUp() {

@@ -1,6 +1,6 @@
 package com.gu.cache.memcached;
 
-import com.gu.performance.diagnostics.metrics.TimingMetric;
+import com.gu.management.timing.TimingMetric;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 
