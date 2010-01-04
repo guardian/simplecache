@@ -24,7 +24,7 @@
         <mockito.version>1.6</mockito.version>
         <junit.version>4.4</junit.version>
         <slf4j.version>1.5.2</slf4j.version>
-        <spring.beans.version>2.5.5</spring.beans.version>
+        <spring.beans.version>3.0.0.RELEASE</spring.beans.version>
         <management.version>1.0</management.version>
         <servlet.api.version>2.5</servlet.api.version>
     </properties>
