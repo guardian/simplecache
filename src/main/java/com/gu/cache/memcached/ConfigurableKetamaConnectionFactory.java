@@ -25,6 +25,6 @@ public class ConfigurableKetamaConnectionFactory extends KetamaConnectionFactory
 		SerializingTranscoder transcoder = new SerializingTranscoder();
 		transcoder.setCompressionThreshold(compressionThresholdKB * 1024);
 
-		return new SerializingTranscoder();
+		return transcoder;
 	}
 }
