@@ -21,7 +21,7 @@ public class MemcachedKeyTranslatorTest {
 		MockitoAnnotations.initMocks(this);
 		translator = new MemcachedKeyTranslator(manifestMock);
 
-		when(manifestMock.getRevisionNumber()).thenReturn("123");
+		when(manifestMock.getRevisionNumber()).thenReturn(123L);
 	}
 
 	@Test

@@ -6,11 +6,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import org.mockito.runners.MockitoJUnit44Runner;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.concurrent.TimeUnit;
 
-@RunWith(MockitoJUnit44Runner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class SoftReferenceSimpleCacheTest {
     private SoftReferenceSimpleCache cache = new SoftReferenceSimpleCache();
 	
