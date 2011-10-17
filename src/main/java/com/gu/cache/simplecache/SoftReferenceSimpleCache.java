@@ -4,13 +4,14 @@ import com.google.common.collect.MapMaker;
 import com.gu.cache.simplecache.statistics.Statistics;
 import com.gu.cache.simplecache.statistics.StatisticsCounter;
 import com.gu.cache.simplecache.statistics.StatisticsProvider;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 public class SoftReferenceSimpleCache implements SimpleCache, StatisticsProvider {
-	private static final Logger LOG = Logger.getLogger(SoftReferenceSimpleCache.class); 
+	private static final Logger LOG = LoggerFactory.getLogger(SoftReferenceSimpleCache.class);
 
     private final ConcurrentMap<Object, CacheValueWithExpiryTime> cache;
 

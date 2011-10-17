@@ -3,7 +3,8 @@ package com.gu.cache.memcached;
 import com.gu.management.timing.TimingMetric;
 import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.MemcachedClient;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 
 import java.net.InetSocketAddress;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class SpyMemcachedClientFactoryBean extends AbstractFactoryBean {
 
-	private static final Logger LOG = Logger.getLogger(SpyMemcachedClientFactoryBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SpyMemcachedClientFactoryBean.class);
 
 	private final List<InetSocketAddress> addresses;
 

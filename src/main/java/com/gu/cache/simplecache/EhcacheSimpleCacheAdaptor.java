@@ -4,12 +4,13 @@ import com.gu.cache.simplecache.statistics.Statistics;
 import com.gu.cache.simplecache.statistics.StatisticsProvider;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
 public class EhcacheSimpleCacheAdaptor implements SimpleCache, StatisticsProvider {
-	private static final Logger LOG = Logger.getLogger(EhcacheSimpleCacheAdaptor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EhcacheSimpleCacheAdaptor.class);
     private final Ehcache cache;
     private final CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory =
     	new CacheValueWithExpiryTimeFactory();

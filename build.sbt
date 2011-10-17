@@ -6,6 +6,11 @@ organization := "com.gu"
 
 scalaVersion := "2.9.1"
 
+ivyXML :=
+    <dependencies>
+        <exclude module="log4j"/>
+    </dependencies>
+
 resolvers ++= Seq(
   "Guardian GitHub" at "http://guardian.github.com/maven/repo-releases"
 )
@@ -19,8 +24,8 @@ libraryDependencies ++= Seq(
   "com.gu" % "management-core" % "3.0.6",
   "org.springframework" % "spring-beans" % "3.0.0.RELEASE",
   "com.google.collections" % "google-collections" % "1.0-rc2",
-  "log4j" % "log4j" % "1.2.14"
-//  "org.slf4j" % "slf4j-api" % "1.6.1"
+  "org.slf4j" % "slf4j-api" % "1.6.2",
+  "org.slf4j" % "log4j-over-slf4j" % "1.6.2"
 )
 
 libraryDependencies ++= Seq(
@@ -32,7 +37,7 @@ libraryDependencies ++= Seq(
   "org.mockito" % "mockito-all" % "1.8.5" % "test",
   "junit" % "junit" % "4.4" % "test",
   "com.novocode" % "junit-interface" % "0.6" % "test",
-  "org.slf4j" % "slf4j-simple" % "1.6.1" % "test"
+  "org.slf4j" % "slf4j-simple" % "1.6.2" % "test"
 )
 
 publishTo <<= (version) { version: String =>
