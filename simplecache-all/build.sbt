@@ -1,8 +1,13 @@
-name := "simplecache-root"
+name := "simplecache-all"
 
 version := "1.34-SNAPSHOT"
 
 organization := "com.gu"
+
+ivyXML :=
+    <dependencies>
+        <exclude module="log4j"/>
+    </dependencies>
 
 publishTo <<= (version) { version: String =>
     val publishType = if (version.endsWith("SNAPSHOT")) "snapshots" else "releases"
@@ -16,6 +21,6 @@ publishTo <<= (version) { version: String =>
 
 maxErrors := 20
 
-javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
+javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint:deprecation")
 
 crossPaths := false
