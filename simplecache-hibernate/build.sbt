@@ -1,6 +1,6 @@
 name := "simplecache-hibernate"
 
-version := "1.34-SNAPSHOT"
+version := "2.1-SNAPSHOT"
 
 organization := "com.gu"
 
