@@ -10,11 +10,12 @@ ivyXML :=
     </dependencies>
 
 resolvers ++= Seq(
-  "Guardian GitHub" at "http://guardian.github.com/maven/repo-releases"
+  "Guardian GitHub" at "http://guardian.github.com/maven/repo-releases",
+  "Spy Memcached" at "http://files.couchbase.com/maven2"
 )
 
 libraryDependencies ++= Seq(
-  "spy" % "memcached" % "2.4.2",
+  "spy" % "spymemcached" % "2.7.3",
   "org.slf4j" % "slf4j-api" % "1.6.2",
   "org.slf4j" % "log4j-over-slf4j" % "1.6.2"
 )
