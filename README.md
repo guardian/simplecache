@@ -14,16 +14,16 @@ How do I use it?
 
 In `sbt`, add the Guardian repository to your `build.sbt`:
 
-   resolvers += "Guardian Github Releases" at "http://guardian.github.com/maven/repo-releases"
+    resolvers += "Guardian Github Releases" at "http://guardian.github.com/maven/repo-releases"
 
 Find the latest version by inspecting the available
 `simplecache-core` artifacts in the repository at:
 
-   http://guardian.github.com/maven/repo-releases/com/gu/simplecache-core
+    http://guardian.github.com/maven/repo-releases/com/gu/simplecache-core
 
 Then include at least the `simplecache-core` artifact in your `build.sbt`:
 
-   libraryDependencies += "com.gu" % "simplecache-core" % "2.1"
+    libraryDependencies += "com.gu" % "simplecache-core" % "2.1"
 
 Depending on your application requirements you may want to also
 include some backend projects. At present, the available artifacts
