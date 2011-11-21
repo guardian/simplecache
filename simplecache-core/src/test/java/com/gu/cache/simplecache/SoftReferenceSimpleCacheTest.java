@@ -1,21 +1,24 @@
 package com.gu.cache.simplecache;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import static org.mockito.Mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SoftReferenceSimpleCacheTest {
     private SoftReferenceSimpleCache cache = new SoftReferenceSimpleCache();
-	
-    @Mock
-    private CacheValueWithExpiryTimeFactory mockFactory;
+
+    @Before
+    public void setUp() {
+        Clock.unfreeze();
+    }
 
     @Test
     public void shouldPutGetAndRemove() throws Exception {
@@ -28,25 +31,22 @@ public class SoftReferenceSimpleCacheTest {
     
     @Test
     public void shouldGetCacheWithExpiryTime() throws Exception {
-    	CacheValueWithExpiryTime expectedValue = new CacheValueWithExpiryTime("value", Long.MAX_VALUE);
-		when(mockFactory.create("value", 1, TimeUnit.DAYS)).thenReturn(expectedValue);
+        Clock.freeze();
 
-    	cache.setCacheValueWithExpiryFactory(mockFactory);
-    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
-    	
-    	CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
-    	
-    	assertThat(actualValue, is(expectedValue));
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+
+        assertThat(actualValue.getValue(), is((Object)"value"));
+        assertThat(actualValue.getInstantaneousSecondsToExpiryTime(), is(TimeUnit.DAYS.toSeconds(1)));
     }
     
     @Test
     public void shouldReturnNullIfTheRequestedCacheEntiryHasExpired() {
-    	CacheValueWithExpiryTime expectedValue = new CacheValueWithExpiryTime("value", System.currentTimeMillis() - 500);
-		when(mockFactory.create("value", 1, TimeUnit.DAYS)).thenReturn(expectedValue);
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
 
-    	cache.setCacheValueWithExpiryFactory(mockFactory);
-    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
-    	
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
     	assertThat(cache.getWithExpiry("key"), is(nullValue()));
     	assertThat(cache.get("key"), is(nullValue()));
     }

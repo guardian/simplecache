@@ -22,11 +22,11 @@ public class CacheValueWithExpiryTime implements Serializable {
 	}
 	
 	public boolean isExpired() {
-		return absoluteExpiryTime <= System.currentTimeMillis();
+		return absoluteExpiryTime <= Clock.currentTimeMillis();
 	}
 
 	public long getInstantaneousSecondsToExpiryTime() {
-		final long nowInMillis = System.currentTimeMillis();
+		final long nowInMillis = Clock.currentTimeMillis();
 		final long relativeExpiryTimeInMillis = absoluteExpiryTime - nowInMillis;
 
 		return TimeUnit.MILLISECONDS.toSeconds(relativeExpiryTimeInMillis);

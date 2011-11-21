@@ -1,4 +1,4 @@
-Simplecache
+SimpleCache
 ===========
 
 What is it?
@@ -110,6 +110,7 @@ How do I release it?
 * Clone the `guardian.github.com` repository to your home directory.
 
 * Update the version numbers in `simplecache` to the new release version number.
+  You can use the `update-version-number` script for this.
 
 * Invoke `sbt` and run the `publish` goal. This will create the necessary
   structure in the cloned `guardian.github.com` project.

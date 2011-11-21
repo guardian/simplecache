@@ -59,7 +59,7 @@ public class EhcacheSimpleCacheAdaptorTest {
 
         Object nonSerializable = new Object();
         adaptor.putWithExpiry("key", nonSerializable, 1, TimeUnit.DAYS);
-        assertThat(adaptor.get("key"), sameInstance((Object)nonSerializable));
+        assertThat(adaptor.get("key"), sameInstance(nonSerializable));
         
         adaptor.remove("key");
         assertThat(adaptor.get("key"), is(nullValue()));
