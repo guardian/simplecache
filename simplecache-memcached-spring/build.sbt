@@ -10,6 +10,7 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
+  "com.gu" % "option" % "1.2",
   "spy" % "spymemcached" % "2.7.3",
   "org.springframework" % "spring-beans" % "3.0.0.RELEASE",
   "log4j" % "log4j" % "1.2.14"

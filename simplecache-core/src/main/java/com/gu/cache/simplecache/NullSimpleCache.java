@@ -1,29 +1,18 @@
 package com.gu.cache.simplecache;
 
-import java.util.concurrent.TimeUnit;
+public class NullSimpleCache extends AbstractSimpleCache {
 
-public class NullSimpleCache implements SimpleCache {
+    @Override
+    protected Object getDirect(Object key) {
+        return null;
+    }
 
-	@Override
-	public Object get(Object key) {
-		return null;
-	}
+    @Override
+    protected void removeDirect(Object key) { }
 
-	@Override
-	public CacheValueWithExpiryTime getWithExpiry(Object key) {
-		return null;
-	}
+    @Override
+    protected void putDirect(Object key, Object cacheValue) { }
 
-	@Override
-	public void putWithExpiry(Object key, Object value, long lifetime, TimeUnit units) {
-	}
-
-	@Override
-	public void remove(Object key) {
-	}
-
-	@Override
-	public void removeAll() {
-	}
-
+    @Override
+    protected void removeAllDirect() { }
 }

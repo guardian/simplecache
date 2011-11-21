@@ -4,14 +4,12 @@ import java.util.concurrent.TimeUnit;
 
 public class KeyTranslatorSimpleCacheDecorator implements SimpleCache {
 
-	
 	private final SimpleCache delegate;
 	private final KeyTranslator keyTranslator;
 
 	public KeyTranslatorSimpleCacheDecorator(SimpleCache delegate, KeyTranslator keyTranslator) {
 		this.delegate = delegate;
 		this.keyTranslator = keyTranslator;
-		
 	}
 	
 	@Override
@@ -43,5 +41,4 @@ public class KeyTranslatorSimpleCacheDecorator implements SimpleCache {
 	public void removeAll() {
 		delegate.removeAll();
 	}
-
 }

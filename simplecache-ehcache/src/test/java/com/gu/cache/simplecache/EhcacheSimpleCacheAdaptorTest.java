@@ -23,18 +23,26 @@ public class EhcacheSimpleCacheAdaptorTest {
 
         ehcache = manager.getCache("testCache");
         adaptor = new EhcacheSimpleCacheAdaptor(ehcache);
+
+        Clock.unfreeze();
     }
 
     @Test
     public void shouldPutGetAndRemoveToEhcache() throws Exception {
         assertThat(adaptor.get("key"), is(nullValue()));
-        adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
-        assertThat(adaptor.get("key"), is((Object)"value"));
-        adaptor.remove("key");
-        assertThat(adaptor.get("key"), is(nullValue()));
 
+        adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+        CacheValueWithExpiryTime cached = (CacheValueWithExpiryTime) ehcache.get("key").getObjectValue();
+        assertThat(cached.getValue(), is((Object)"value"));
+
+        adaptor.remove("key");
+        assertThat(ehcache.get("key"), is(nullValue()));
+
+        Clock.freeze();
         adaptor.putWithExpiry("key2", "value", 1000, TimeUnit.MILLISECONDS);
-        assertThat(ehcache.get("key2").getTimeToLive(), is(1));
+        assertThat(ehcache.get("key2").getTimeToLive(), is(0));
+        cached = (CacheValueWithExpiryTime) ehcache.get("key2").getObjectValue();
+        assertThat(cached.getInstantaneousSecondsToExpiryTime(), is(1L));
     }
     
     @Test
