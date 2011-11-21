@@ -7,6 +7,7 @@ public class Statistics {
     private final long numWrites;
     private final long numRemoves;
     private final long numRemoveAlls;
+    private final long numServeStales;
 
     public Statistics(
             long numEntries,
@@ -14,13 +15,15 @@ public class Statistics {
             long numMisses,
             long numWrites,
             long numRemoves,
-            long numRemoveAlls) {
+            long numRemoveAlls,
+            long numServeStales) {
         this.numEntries = numEntries;
         this.numHits = numHits;
         this.numMisses = numMisses;
         this.numWrites = numWrites;
         this.numRemoves = numRemoves;
         this.numRemoveAlls = numRemoveAlls;
+        this.numServeStales = numServeStales;
     }
 
     public long getNumEntries() {
@@ -45,6 +48,10 @@ public class Statistics {
 
     public long getNumRemoveAlls() {
         return numRemoveAlls;
+    }
+
+    public long getNumServeStales() {
+        return numServeStales;
     }
 
     public long getNumReads() {

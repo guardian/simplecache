@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SoftReferenceSimpleCacheTest {
@@ -17,16 +18,52 @@ public class SoftReferenceSimpleCacheTest {
 
     @Before
     public void setUp() {
+        cache.setServeStaleEnabled(false);
         Clock.unfreeze();
     }
 
     @Test
     public void shouldPutGetAndRemove() throws Exception {
         assertThat(cache.get("key"), is(nullValue()));
+
         cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
         assertThat(cache.get("key"), is((Object)"value"));
+
         cache.remove("key");
         assertThat(cache.get("key"), is(nullValue()));
+    }
+
+    @Test
+    public void shouldGetStaleIfEnabled() throws Exception {
+        cache.setServeStaleEnabled(true);
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        // Make the entry stale
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+        assertThat(cache.get("key"), is((Object)"value"));
+
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+        assertThat(actualValue.getValue(), is((Object)"value"));
+        long expectStaleTime = TimeUnit.HOURS.toSeconds(1) - TimeUnit.MINUTES.toSeconds(1);
+        assertThat(actualValue.getInstantaneousSecondsSinceExpiryTime(), is(expectStaleTime));
+    }
+
+    @Test
+    public void shouldNotGetStaleIfDisabled() throws Exception {
+        cache.setServeStaleEnabled(false);
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        // Make the entry stale
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+        assertThat(cache.get("key"), nullValue());
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+        assertThat(actualValue, nullValue());
     }
     
     @Test
@@ -52,7 +89,7 @@ public class SoftReferenceSimpleCacheTest {
     }
 
     @Test
-    public void shouldRemoveAllFromSoftReferenceCache() throws Exception {
+    public void shouldRemoveAll() throws Exception {
     	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
     	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
     	
@@ -60,6 +97,24 @@ public class SoftReferenceSimpleCacheTest {
     	
     	assertThat(cache.get("key"), is(nullValue()));
     	assertThat(cache.get("another key"), is(nullValue()));
+    }
+
+    @Test
+	public void shouldReturnNullCorrectlyFromGet() {
+		assertThat(cache.get("key"), is(nullValue()));
+		assertThat(cache.getWithExpiry("key"), is(nullValue()));
+	}
+
+    @Test
+    public void shouldPutAndGetEvenWhenTheValuesAreNotSerlizable() throws Exception {
+        assertThat(cache.get("key"), is(nullValue()));
+
+        Object nonSerializable = new Object();
+        cache.putWithExpiry("key", nonSerializable, 1, TimeUnit.DAYS);
+        assertThat(cache.get("key"), sameInstance(nonSerializable));
+
+        cache.remove("key");
+        assertThat(cache.get("key"), is(nullValue()));
     }
 
     @Test
@@ -82,5 +137,4 @@ public class SoftReferenceSimpleCacheTest {
         assertThat(cache.getStatistics().getNumHits(), is(2L));
         assertThat(cache.getStatistics().getNumMisses(), is(1L));
     }
-
 }

@@ -32,6 +32,10 @@ public class CacheValueWithExpiryTime implements Serializable {
 		return TimeUnit.MILLISECONDS.toSeconds(relativeExpiryTimeInMillis);
 	}
 
+	public long getInstantaneousSecondsSinceExpiryTime() {
+		return -getInstantaneousSecondsToExpiryTime();
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o);

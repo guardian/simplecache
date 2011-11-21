@@ -8,6 +8,7 @@ public class StatisticsCounter {
     private AtomicLong numWrites = new AtomicLong();
     private AtomicLong numRemoves = new AtomicLong();
     private AtomicLong numRemoveAlls = new AtomicLong();
+    private AtomicLong numServeStales = new AtomicLong();
 
     public void hit() {
         numHits.getAndIncrement();
@@ -29,12 +30,17 @@ public class StatisticsCounter {
         numRemoveAlls.getAndIncrement();
     }
 
+    public void serveStale() {
+        numServeStales.getAndIncrement();
+    }
+
     public Statistics asStatistics(int numEntries) {
         return new Statistics(numEntries,
                 numHits.get(),
                 numMisses.get(),
                 numWrites.get(),
                 numRemoves.get(),
-                numRemoveAlls.get());
+                numRemoveAlls.get(),
+                numServeStales.get());
     }
 }

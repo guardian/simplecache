@@ -1,100 +1,119 @@
 package com.gu.cache.simplecache;
 
 import com.gu.cache.memcached.MemcachedClient;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 import org.junit.Before;
 import org.junit.Test;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
-
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import static org.mockito.Mockito.*;
-import org.mockito.MockitoAnnotations;
 
 import java.util.concurrent.TimeUnit;
 
-public class MemcachedSimpleCacheAdaptorTest {
-	@Mock private MemcachedClient memcachedClient;
-	@Mock private KeyTranslator keyTranslator;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
-	private MemcachedSimpleCacheAdaptor adaptor;
+public class MemcachedSimpleCacheAdaptorTest {
+	private MemcachedSimpleCacheAdaptor cache;
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		adaptor = new MemcachedSimpleCacheAdaptor(memcachedClient, keyTranslator);
-        when(keyTranslator.translate("some key")).thenReturn("translated key");
-	}
+        MemcachedClient memcachedClient = new StubMemcachedClient();
+        KeyTranslator keyTranslator = new MD5KeyTranslator(new MD5HashGenerator());
+		cache = new MemcachedSimpleCacheAdaptor(memcachedClient, keyTranslator);
 
-	@Test
-	public void shouldPutToMemcachedWithNoMemcachedExpirationForServingStale() throws Exception {
-		adaptor.putWithExpiry("some key", "value", 1, TimeUnit.SECONDS);
-		verify(memcachedClient).set(anyString(), anyObject(), eq(0));
-	}
-
-	@Test
-	public void shouldPutToMemcachedUsingKeyTranslator() throws Exception {
-		adaptor.putWithExpiry("some key", "value", 1, TimeUnit.SECONDS);
-		verify(memcachedClient).set(eq("translated key"), argThat(hasProperty("value", is("value"))), eq(0));
+        cache.setServeStaleEnabled(false);
+        Clock.unfreeze();
 	}
 
     @Test
-    public void shouldSetExpiryToSpecifiedValueIfServeStaleNotEnabled() throws Exception {
-        adaptor.putWithExpiry("some key", "value", 10, TimeUnit.SECONDS);
-        verify(memcachedClient).set(eq("translated key"), argThat(hasProperty("value", is("value"))), eq(0));
+    public void shouldPutGetAndRemove() throws Exception {
+        assertThat(cache.get("key"), is(nullValue()));
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+        assertThat(cache.get("key"), is((Object)"value"));
+
+        cache.remove("key");
+        assertThat(cache.get("key"), is(nullValue()));
     }
 
-//    @Test
-//    public void shouldSetExpiryToZeroIfServeStaleEnabled() throws Exception {
-//        adaptor.setServeStaleEnabled(true);
-//        adaptor.putWithExpiry("some key", "value", 10, TimeUnit.SECONDS);
-//        verify(memcachedClient).set(eq("translated key"), argThat(hasProperty("value", is("value"))), eq(0));
-//    }
+    @Test
+    public void shouldGetStaleIfEnabled() throws Exception {
+        cache.setServeStaleEnabled(true);
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        // Make the entry stale
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+        assertThat(cache.get("key"), is((Object)"value"));
+
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+        assertThat(actualValue.getValue(), is((Object)"value"));
+        long expectStaleTime = TimeUnit.HOURS.toSeconds(1) - TimeUnit.MINUTES.toSeconds(1);
+        assertThat(actualValue.getInstantaneousSecondsSinceExpiryTime(), is(expectStaleTime));
+    }
+
+    @Test
+    public void shouldNotGetStaleIfDisabled() throws Exception {
+        cache.setServeStaleEnabled(false);
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        // Make the entry stale
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+        assertThat(cache.get("key"), nullValue());
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+        assertThat(actualValue, nullValue());
+    }
+
+    @Test
+    public void shouldGetCacheWithExpiryTime() throws Exception {
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+
+        assertThat(actualValue.getValue(), is((Object)"value"));
+        assertThat(actualValue.getInstantaneousSecondsToExpiryTime(), is(TimeUnit.DAYS.toSeconds(1)));
+    }
+
+    @Test
+    public void shouldReturnNullIfTheRequestedCacheEntiryHasExpired() {
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+    	assertThat(cache.getWithExpiry("key"), is(nullValue()));
+    	assertThat(cache.get("key"), is(nullValue()));
+    }
+
+	@Test
+	public void shouldNotRemoveAllFromMemcachedBecauseWeNeverWantToAccidentlyClearMemcached() {
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+
+    	cache.removeAll();
+
+    	assertThat(cache.get("key"), notNullValue());
+    	assertThat(cache.get("another key"), notNullValue());
+	}
 
 	@Test
 	public void shouldReturnNullCorrectlyFromGet() {
-		when(memcachedClient.get("translated key")).thenReturn(null);
-
-		assertThat(adaptor.get("some key"), nullValue());
+		assertThat(cache.get("key"), is(nullValue()));
+		assertThat(cache.getWithExpiry("key"), is(nullValue()));
 	}
 
-	@Test
-	public void shouldReturnNullCorrectlyFromGetWithExpiry() {
-		when(memcachedClient.get("translated key")).thenReturn(null);
+    @Test
+    public void shouldPutAndGetEvenWhenTheValuesAreNotSerlizable() throws Exception {
+        assertThat(cache.get("key"), is(nullValue()));
 
-		assertThat(adaptor.getWithExpiry("some key"), nullValue());
-	}
-	
-	@Test
-	public void shouldNotRemoveAllFromMemcachedBecauseWeNeverWantToAccidentlyClearMemcached() {
-		adaptor.removeAll();
-		
-		verifyZeroInteractions(memcachedClient);
-	}
+        Object nonSerializable = new Object();
+        cache.putWithExpiry("key", nonSerializable, 1, TimeUnit.DAYS);
+        assertThat(cache.get("key"), sameInstance(nonSerializable));
 
-//    @Test
-//    public void shouldReturnStaleObjectWhenGettingWithExpiryIfServeStaleEnabled() {
-//        CacheValueWithExpiryTime staleValue = new CacheValueWithExpiryTime("value", System.currentTimeMillis() - 1);
-//        when(memcachedClient.get("translated key")).thenReturn(staleValue);
-//
-//        adaptor.setServeStaleEnabled(true);
-//        CacheValueWithExpiryTime returnedValue = adaptor.getWithExpiry("some key");
-//
-//        assertThat(returnedValue, is(staleValue));
-//        assertThat(returnedValue.isExpired(), is(true));
-//    }
-//
-//    @Test
-//    public void shouldNotReturnStaleObjectWhenGettingEvenIfServeStaleEnabled() {
-//        CacheValueWithExpiryTime staleValue = new CacheValueWithExpiryTime("value", System.currentTimeMillis() - 1);
-//        when(memcachedClient.get("translated key")).thenReturn(staleValue);
-//
-//        adaptor.setServeStaleEnabled(true);
-//        String returnedValue = (String) adaptor.get("some key");
-//
-//        assertThat(returnedValue, nullValue());
-//    }
-
+        cache.remove("key");
+        assertThat(cache.get("key"), is(nullValue()));
+    }
 }

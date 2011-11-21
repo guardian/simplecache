@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class EhcacheSimpleCacheAdaptorTest {
     private Ehcache ehcache;
-    private EhcacheSimpleCacheAdaptor adaptor;
+    private EhcacheSimpleCacheAdaptor cache;
 
     @Before
     public void setUp() throws Exception {
@@ -22,76 +22,154 @@ public class EhcacheSimpleCacheAdaptorTest {
         }
 
         ehcache = manager.getCache("testCache");
-        adaptor = new EhcacheSimpleCacheAdaptor(ehcache);
+        cache = new EhcacheSimpleCacheAdaptor(ehcache);
 
+        cache.setServeStaleEnabled(false);
         Clock.unfreeze();
     }
 
     @Test
+    public void shouldPutGetAndRemove() throws Exception {
+        assertThat(cache.get("key"), is(nullValue()));
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+        assertThat(cache.get("key"), is((Object)"value"));
+
+        cache.remove("key");
+        assertThat(cache.get("key"), is(nullValue()));
+    }
+
+    @Test
     public void shouldPutGetAndRemoveToEhcache() throws Exception {
-        assertThat(adaptor.get("key"), is(nullValue()));
+        assertThat(cache.get("key"), is(nullValue()));
 
-        adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
         CacheValueWithExpiryTime cached = (CacheValueWithExpiryTime) ehcache.get("key").getObjectValue();
-        assertThat(cached.getValue(), is((Object)"value"));
+        assertThat(cached.getValue(), is((Object) "value"));
 
-        adaptor.remove("key");
+        cache.remove("key");
         assertThat(ehcache.get("key"), is(nullValue()));
 
         Clock.freeze();
-        adaptor.putWithExpiry("key2", "value", 1000, TimeUnit.MILLISECONDS);
+        cache.putWithExpiry("key2", "value", 1000, TimeUnit.MILLISECONDS);
         assertThat(ehcache.get("key2").getTimeToLive(), is(0));
         cached = (CacheValueWithExpiryTime) ehcache.get("key2").getObjectValue();
         assertThat(cached.getInstantaneousSecondsToExpiryTime(), is(1L));
     }
-    
+
+    @Test
+    public void shouldGetStaleIfEnabled() throws Exception {
+        cache.setServeStaleEnabled(true);
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        // Make the entry stale
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+        assertThat(cache.get("key"), is((Object)"value"));
+
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+        assertThat(actualValue.getValue(), is((Object)"value"));
+        long expectStaleTime = TimeUnit.HOURS.toSeconds(1) - TimeUnit.MINUTES.toSeconds(1);
+        assertThat(actualValue.getInstantaneousSecondsSinceExpiryTime(), is(expectStaleTime));
+    }
+
+    @Test
+    public void shouldNotGetStaleIfDisabled() throws Exception {
+        cache.setServeStaleEnabled(false);
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        // Make the entry stale
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+        assertThat(cache.get("key"), nullValue());
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+        assertThat(actualValue, nullValue());
+    }
+
+    @Test
+    public void shouldGetCacheWithExpiryTime() throws Exception {
+        Clock.freeze();
+
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+
+        CacheValueWithExpiryTime actualValue = cache.getWithExpiry("key");
+
+        assertThat(actualValue.getValue(), is((Object)"value"));
+        assertThat(actualValue.getInstantaneousSecondsToExpiryTime(), is(TimeUnit.DAYS.toSeconds(1)));
+    }
+
+    @Test
+    public void shouldReturnNullIfTheRequestedCacheEntiryHasExpired() {
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.MINUTES);
+
+        Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
+
+    	assertThat(cache.getWithExpiry("key"), is(nullValue()));
+    	assertThat(cache.get("key"), is(nullValue()));
+    }
+
+    @Test
+    public void shouldRemoveAll() throws Exception {
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+
+    	cache.removeAll();
+
+    	assertThat(cache.get("key"), is(nullValue()));
+    	assertThat(cache.get("another key"), is(nullValue()));
+    }
+
     @Test
     public void shouldRemoveAllFromEhcache() throws Exception {
-    	adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
-    	adaptor.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
     	
-    	adaptor.removeAll();
+    	cache.removeAll();
     	
     	assertThat(ehcache.getSize(), is(0));
     }
 
     @Test
 	public void shouldReturnNullCorrectlyFromGet() {
-		assertThat(adaptor.get("key"), is(nullValue()));
-		assertThat(adaptor.getWithExpiry("key"), is(nullValue()));
+		assertThat(cache.get("key"), is(nullValue()));
+		assertThat(cache.getWithExpiry("key"), is(nullValue()));
 	}
 
     @Test
     public void shouldPutAndGetEvenWhenTheValuesAreNotSerlizable() throws Exception {
-        assertThat(adaptor.get("key"), is(nullValue()));
+        assertThat(cache.get("key"), is(nullValue()));
 
         Object nonSerializable = new Object();
-        adaptor.putWithExpiry("key", nonSerializable, 1, TimeUnit.DAYS);
-        assertThat(adaptor.get("key"), sameInstance(nonSerializable));
+        cache.putWithExpiry("key", nonSerializable, 1, TimeUnit.DAYS);
+        assertThat(cache.get("key"), sameInstance(nonSerializable));
         
-        adaptor.remove("key");
-        assertThat(adaptor.get("key"), is(nullValue()));
+        cache.remove("key");
+        assertThat(cache.get("key"), is(nullValue()));
     }
     
     @Test
     public void shouldCountGetsAndRemoved() throws Exception {
-        assertThat(adaptor.getStatistics().getNumEntries(), is(0L));
-        assertThat(adaptor.getStatistics().getNumHits(), is(0L));
-        assertThat(adaptor.getStatistics().getNumMisses(), is(0L));
+        assertThat(cache.getStatistics().getNumEntries(), is(0L));
+        assertThat(cache.getStatistics().getNumHits(), is(0L));
+        assertThat(cache.getStatistics().getNumMisses(), is(0L));
 
-        adaptor.get("key");
+        cache.get("key");
 
-        assertThat(adaptor.getStatistics().getNumEntries(), is(0L));
-        assertThat(adaptor.getStatistics().getNumHits(), is(0L));
-        assertThat(adaptor.getStatistics().getNumMisses(), is(1L));
+        assertThat(cache.getStatistics().getNumEntries(), is(0L));
+        assertThat(cache.getStatistics().getNumHits(), is(0L));
+        assertThat(cache.getStatistics().getNumMisses(), is(1L));
 
-        adaptor.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
-        adaptor.get("key");
-        adaptor.get("key");
+        cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+        cache.get("key");
+        cache.get("key");
 
-        assertThat(adaptor.getStatistics().getNumEntries(), is(1L));
-        assertThat(adaptor.getStatistics().getNumHits(), is(2L));
-        assertThat(adaptor.getStatistics().getNumMisses(), is(1L));
+        assertThat(cache.getStatistics().getNumEntries(), is(1L));
+        assertThat(cache.getStatistics().getNumHits(), is(2L));
+        assertThat(cache.getStatistics().getNumMisses(), is(1L));
     }
 
 }

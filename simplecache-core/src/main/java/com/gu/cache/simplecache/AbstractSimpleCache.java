@@ -9,6 +9,7 @@ public abstract class AbstractSimpleCache implements SimpleCache {
 	private static final Logger LOG = Logger.getLogger(AbstractSimpleCache.class);
 
 	private String name;
+    private boolean serveStaleEnabled = false;
     private StatisticsCounter count = new StatisticsCounter();
     private CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory = new CacheValueWithExpiryTimeFactory();
 
@@ -19,6 +20,14 @@ public abstract class AbstractSimpleCache implements SimpleCache {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    public boolean isServeStaleEnabled() {
+        return serveStaleEnabled;
+    }
+
+    public void setServeStaleEnabled(boolean serveStaleEnabled) {
+        this.serveStaleEnabled = serveStaleEnabled;
+    }
 
     protected abstract Object getDirect(Object key);
 
@@ -50,17 +59,27 @@ public abstract class AbstractSimpleCache implements SimpleCache {
 
     		return null;
     	}
-    	
-    	if (cacheValueWithExpiryTime.isExpired()) {
+
+    	if (cacheValueWithExpiryTime.isExpired() && !serveStaleEnabled) {
         	if (LOG.isDebugEnabled()) {
         		LOG.debug("getWithExpiry(" + key + ") - MISS (removing and ignoring expired entry)");
         	}
-    		removeDirect(key);
+    		//removeDirect(key);
             count.miss();
 
     		return null;
     	}
-    	
+
+    	if (cacheValueWithExpiryTime.isExpired() && serveStaleEnabled) {
+        	if (LOG.isDebugEnabled()) {
+        		LOG.debug("getWithExpiry(" + key + ") - HIT (serving stale)");
+        	}
+            count.serveStale();
+            count.hit();
+
+    	    return cacheValueWithExpiryTime;
+    	}
+
     	if (LOG.isTraceEnabled()) {
             LOG.trace(String.format("getWithExpiry(%s)[%ss] - HIT", key, cacheValueWithExpiryTime.getInstantaneousSecondsToExpiryTime()));
     	}
