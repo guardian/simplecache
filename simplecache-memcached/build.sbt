@@ -4,11 +4,6 @@ version := "2.2-SNAPSHOT"
 
 organization := "com.gu"
 
-ivyXML :=
-    <dependencies>
-        <exclude module="log4j"/>
-    </dependencies>
-
 resolvers ++= Seq(
   "Guardian GitHub" at "http://guardian.github.com/maven/repo-releases",
   "Spy Memcached" at "http://files.couchbase.com/maven2"
@@ -16,8 +11,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "spy" % "spymemcached" % "2.7.3",
-  "org.slf4j" % "slf4j-api" % "1.6.2",
-  "org.slf4j" % "log4j-over-slf4j" % "1.6.2"
+  "log4j" % "log4j" % "1.2.14"
 )
 
 libraryDependencies ++= Seq(
@@ -28,8 +22,7 @@ libraryDependencies ++= Seq(
   "org.hamcrest" % "hamcrest-all" % "1.1" % "test",
   "org.mockito" % "mockito-all" % "1.8.5" % "test",
   "junit" % "junit" % "4.4" % "test",
-  "com.novocode" % "junit-interface" % "0.6" % "test",
-  "org.slf4j" % "slf4j-simple" % "1.6.2" % "test"
+  "com.novocode" % "junit-interface" % "0.6" % "test"
 )
 
 publishTo <<= (version) { version: String =>

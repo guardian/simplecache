@@ -2,7 +2,7 @@ package com.gu.cache.memcached;
 
 import com.gu.management.timing.TimingMetric;
 import org.apache.commons.lang.time.StopWatch;
-import org.slf4j.Logger;
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.Callable;
 

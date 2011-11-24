@@ -3,8 +3,7 @@ package com.gu.cache.memcached;
 import com.gu.management.timing.TimingMetric;
 import net.spy.memcached.MemcachedClientIF;
 import net.spy.memcached.MemcachedNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class SpyMemcachedClientAdaptor implements MemcachedClient {
-	private static final Logger LOG = LoggerFactory.getLogger(SpyMemcachedClientAdaptor.class);
+	private static final Logger LOG = Logger.getLogger(SpyMemcachedClientAdaptor.class);
 
 	private final MemcachedClientIF client;
 	private final TimingMetric metric;

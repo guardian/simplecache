@@ -2,11 +2,10 @@ package com.gu.cache.simplecache;
 
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 public class TwoLevelSimpleCacheAggregator implements SimpleCache {
-	private static final Logger LOG = LoggerFactory.getLogger(TwoLevelSimpleCacheAggregator.class);
+	private static final Logger LOG = Logger.getLogger(TwoLevelSimpleCacheAggregator.class);
 
 	private final SimpleCache firstLevelCache;
     private final SimpleCache secondLevelCache;

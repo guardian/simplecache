@@ -1,7 +1,7 @@
 package com.gu.cache.memcached;
 
 import com.gu.management.timing.TimingMetric;
-import org.slf4j.Logger;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;

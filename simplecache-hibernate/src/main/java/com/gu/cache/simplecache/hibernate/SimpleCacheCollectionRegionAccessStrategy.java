@@ -5,13 +5,12 @@ import java.util.concurrent.TimeUnit;
 import org.hibernate.cache.CacheException;
 import org.hibernate.cache.CollectionRegion;
 import org.hibernate.cache.access.CollectionRegionAccessStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.gu.cache.simplecache.SimpleCache;
 
 public class SimpleCacheCollectionRegionAccessStrategy extends SimpleCacheDataRegionAccessStrategy implements CollectionRegionAccessStrategy {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleCacheCollectionRegionAccessStrategy.class);
+    private static final Logger LOG = Logger.getLogger(SimpleCacheCollectionRegionAccessStrategy.class);
 
     private final SimpleCacheCollectionRegion collectionRegion;
 
@@ -31,7 +30,7 @@ public class SimpleCacheCollectionRegionAccessStrategy extends SimpleCacheDataRe
     @Override
     public Object get(Object key, long txTimestamp) throws CacheException {
     	if (LOG.isTraceEnabled()) {
-    		LOG.trace("get {} {}", key, txTimestamp);
+    		LOG.trace(String.format("get %s %s", key, txTimestamp));
     	}
         return getCache().get(key);
     }
@@ -39,7 +38,7 @@ public class SimpleCacheCollectionRegionAccessStrategy extends SimpleCacheDataRe
     @Override
     public boolean putFromLoad(Object key, Object value, long txTimestamp, Object version) throws CacheException {
     	if (LOG.isTraceEnabled()) {
-    		LOG.trace("putFromLoad {} => {}", key, value);
+    		LOG.trace(String.format("putFromLoad %s => %s", key, value));
     	}
     	put(key, value);
 	    return true;
@@ -52,7 +51,7 @@ public class SimpleCacheCollectionRegionAccessStrategy extends SimpleCacheDataRe
 	@Override
     public boolean putFromLoad(Object key, Object value, long txTimestamp, Object version, boolean minimalPutOverride) throws CacheException {
     	if (LOG.isTraceEnabled()) {
-    		LOG.trace("putFromLoad (with minimal put) {} => {} ", key, value);
+    		LOG.trace(String.format("putFromLoad (with minimal put) %s => %s ", key, value));
     	}
 		put(key, value);
 		return true;
@@ -61,7 +60,7 @@ public class SimpleCacheCollectionRegionAccessStrategy extends SimpleCacheDataRe
     @Override
     public void remove(Object key) throws CacheException {
     	if (LOG.isTraceEnabled()) {
-    		LOG.trace("remove {}", key);
+    		LOG.trace("remove " + key);
     	}
         getCache().remove(key);
     }
@@ -69,7 +68,7 @@ public class SimpleCacheCollectionRegionAccessStrategy extends SimpleCacheDataRe
     @Override
     public void evict(Object key) throws CacheException {
     	if (LOG.isTraceEnabled()) {
-    		LOG.trace("evict {}", key);
+    		LOG.trace("evict " + key);
     	}
         getCache().remove(key);
     }

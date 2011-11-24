@@ -6,13 +6,12 @@ import org.hibernate.cache.CacheException;
 import org.hibernate.cache.EntityRegion;
 import org.hibernate.cache.access.EntityRegionAccessStrategy;
 import org.hibernate.cache.access.SoftLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.gu.cache.simplecache.SimpleCache;
 
 public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegionAccessStrategy implements EntityRegionAccessStrategy {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleCacheEntityRegionAccessStrategy.class);
+    private static final Logger LOG = Logger.getLogger(SimpleCacheEntityRegionAccessStrategy.class);
 
     private final SimpleCacheEntityRegion entityRegion;
 
@@ -27,7 +26,7 @@ public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegion
     @Override
     public Object get(Object key, long txTimestamp) throws CacheException {
         if (LOG.isTraceEnabled()) {
-        	LOG.trace("get {}", key);
+        	LOG.trace("get " + key);
         }
         return getCache().get(key);
     }
@@ -35,7 +34,7 @@ public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegion
     @Override
     public boolean putFromLoad(Object key, Object value, long txTimestamp, Object version) throws CacheException {
         if (LOG.isTraceEnabled()) {
-        	LOG.trace("putFromLoad {} => {}", key, value);
+        	LOG.trace(String.format("putFromLoad %s => %s", key, value));
         }
         put(key, value);
         return true;
@@ -44,7 +43,7 @@ public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegion
     @Override
     public boolean putFromLoad(Object key, Object value, long txTimestamp, Object version, boolean minimalPutOverride) throws CacheException {
         if (LOG.isTraceEnabled()) {
-        	LOG.trace("putFromLoad (with minimal put) {} => {} ", key, value);
+        	LOG.trace(String.format("putFromLoad (with minimal put) %s => %s ", key, value));
         }
         put(key, value);
         return true;
@@ -53,7 +52,7 @@ public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegion
     @Override
     public boolean afterInsert(Object key, Object value, Object version) throws CacheException {
         if (LOG.isTraceEnabled()) {
-        	LOG.trace("afterInsert {} => {}", key, value);
+        	LOG.trace(String.format("afterInsert %s => %s", key, value));
         }
         put(key, value);
         return true;
@@ -66,7 +65,7 @@ public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegion
 	@Override
     public boolean afterUpdate(Object key, Object value, Object currentVersion, Object previousVersion, SoftLock lock) throws CacheException {
         if (LOG.isTraceEnabled()) {
-        	LOG.trace("afterUpdate {} => {}", key, value);
+        	LOG.trace(String.format("afterUpdate %s => %s", key, value));
         }
         put(key, value);
         return true;
@@ -75,7 +74,7 @@ public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegion
     @Override
     public void remove(Object key) throws CacheException {
         if (LOG.isTraceEnabled()) {
-        	LOG.trace("remove {}", key);
+        	LOG.trace("remove " + key);
         }
         getCache().remove(key);
     }
@@ -83,7 +82,7 @@ public class SimpleCacheEntityRegionAccessStrategy extends SimpleCacheDataRegion
     @Override
     public void evict(Object key) throws CacheException {
         if (LOG.isTraceEnabled()) {
-        	LOG.trace("evict {}", key);
+        	LOG.trace("evict " + key);
         }
         getCache().remove(key);
     }

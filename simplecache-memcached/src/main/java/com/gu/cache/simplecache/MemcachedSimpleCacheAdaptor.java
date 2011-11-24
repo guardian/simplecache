@@ -1,14 +1,13 @@
 package com.gu.cache.simplecache;
 
 import com.gu.cache.memcached.MemcachedClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 
 
-public class MemcachedSimpleCacheAdaptor implements SimpleCache {
-	private static final Logger LOG = LoggerFactory.getLogger(MemcachedSimpleCacheAdaptor.class);
+public class MemcachedSimpleCacheAdaptor extends AbstractSimpleCache {
+	private static final Logger LOG = Logger.getLogger(MemcachedSimpleCacheAdaptor.class);
 	private final MemcachedClient client;
 	private final KeyTranslator keyTranslator;
 	private final CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory =

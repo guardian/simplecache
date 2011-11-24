@@ -1,0 +1,104 @@
+package com.gu.cache.simplecache;
+
+import com.gu.cache.simplecache.statistics.StatisticsCounter;
+import org.apache.log4j.Logger;
+
+import java.util.concurrent.TimeUnit;
+
+public abstract class AbstractSimpleCache implements SimpleCache {
+	private static final Logger LOG = Logger.getLogger(AbstractSimpleCache.class);
+
+	private String name;
+    private StatisticsCounter count = new StatisticsCounter();
+    private CacheValueWithExpiryTimeFactory cacheValueWithExpiryTimeFactory = new CacheValueWithExpiryTimeFactory();
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+    protected abstract Object getDirect(Object key);
+
+    protected abstract void removeDirect(Object key);
+
+    protected abstract void putDirect(Object key, Object cacheValue);
+
+    protected abstract void removeAllDirect();
+
+    @Override
+    public Object get(Object key) {
+        CacheValueWithExpiryTime cacheValueWithExpiryTime = getWithExpiry(key);
+        if (cacheValueWithExpiryTime == null) {
+        	return null;
+        }
+
+		return cacheValueWithExpiryTime.getValue();
+    }
+
+    @Override
+    public CacheValueWithExpiryTime getWithExpiry(Object key) {
+    	CacheValueWithExpiryTime cacheValueWithExpiryTime = (CacheValueWithExpiryTime) getDirect(key);
+    	
+    	if (cacheValueWithExpiryTime == null) {
+        	if (LOG.isTraceEnabled()) {
+        		LOG.trace("getWithExpiry(" + key + ") - MISS");
+        	}
+            count.miss();
+
+    		return null;
+    	}
+    	
+    	if (cacheValueWithExpiryTime.isExpired()) {
+        	if (LOG.isDebugEnabled()) {
+        		LOG.debug("getWithExpiry(" + key + ") - MISS (removing and ignoring expired entry)");
+        	}
+    		removeDirect(key);
+            count.miss();
+
+    		return null;
+    	}
+    	
+    	if (LOG.isTraceEnabled()) {
+            LOG.trace(String.format("getWithExpiry(%s)[%ss] - HIT", key, cacheValueWithExpiryTime.getInstantaneousSecondsToExpiryTime()));
+    	}
+        count.hit();
+
+    	return cacheValueWithExpiryTime;
+    }
+
+    @Override
+    public void putWithExpiry(Object key, Object value, long lifetime, TimeUnit units) {
+    	CacheValueWithExpiryTime cacheValue = cacheValueWithExpiryTimeFactory.create(value, lifetime, units);
+        putDirect(key, cacheValue);
+
+    	if (LOG.isTraceEnabled()) {
+    		LOG.trace(String.format("putWithExpiry(%s) => '%s'", key, value) );
+    	}
+        count.write();
+    }
+
+
+    @Override
+    public void remove(Object key) {
+    	if (LOG.isTraceEnabled()) {
+    		LOG.trace(String.format("remove(%s)", key) );
+    	}
+        removeDirect(key);
+        count.remove();
+    }
+
+    @Override
+    public void removeAll() {
+    	LOG.debug("removeAll");
+
+    	removeAllDirect();
+        count.removeAll();
+    }
+
+    protected StatisticsCounter getStatisticsCounter() {
+        return count;
+    }
+}

@@ -4,14 +4,12 @@ package com.gu.cache.memcached;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 
 public class MemcachedClientExceptionSuppressingDecorator implements MemcachedClient {
 
-	private static final Logger LOG = LoggerFactory.getLogger(MemcachedClientExceptionSuppressingDecorator.class);
+	private static final Logger LOG = Logger.getLogger(MemcachedClientExceptionSuppressingDecorator.class);
 
 	private MemcachedClient memcachedClient;
 
