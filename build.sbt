@@ -1,4 +1,4 @@
-name := "simplecache-root"
+name := "simplecache-all"
 
 version := "2.2-SNAPSHOT"
 

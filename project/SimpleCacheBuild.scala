@@ -2,7 +2,11 @@ import sbt._
 
 object SimpleCacheBuild extends Build {
 
-  lazy val root = Project("root", file(".")) aggregate (core, ehcache, hibernate, memcached, memcached_spring, all)
+  lazy val all = Project("simplecache-all", file(".")) aggregate (
+      core, ehcache, hibernate, memcached, memcached_spring
+    ) dependsOn (
+      core, ehcache, hibernate, memcached, memcached_spring
+    )
 
   lazy val core = Project("simplecache-core", file("simplecache-core"))
 
@@ -11,6 +15,4 @@ object SimpleCacheBuild extends Build {
   lazy val memcached = Project("simplecache-memcached", file("simplecache-memcached")) dependsOn core
 
   lazy val memcached_spring = Project("simplecache-memcached-spring", file("simplecache-memcached-spring")) dependsOn memcached
-
-  lazy val all = Project("simplecache-all", file("simplecache-all")) dependsOn (core, ehcache, hibernate, memcached, memcached_spring)
 }
