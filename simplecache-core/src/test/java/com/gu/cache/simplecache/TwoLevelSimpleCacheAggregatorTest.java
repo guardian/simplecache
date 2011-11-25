@@ -59,7 +59,7 @@ public class TwoLevelSimpleCacheAggregatorTest {
     	when(firstLevelCache.getWithExpiry("key")).thenReturn(null);
     	when(secondLevelCache.getWithExpiry("key")).thenReturn(null);
 
-        assertThat(cache.get("key"), is(nullValue()));
+        assertThat(cache.get("key"), nullValue());
 
         verify(firstLevelCache, never()).putWithExpiry("key", null, 1, TimeUnit.DAYS);
 

@@ -8,9 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SoftReferenceSimpleCacheTest {
@@ -24,13 +22,13 @@ public class SoftReferenceSimpleCacheTest {
 
     @Test
     public void shouldPutGetAndRemove() throws Exception {
-        assertThat(cache.get("key"), is(nullValue()));
+        assertThat(cache.get("key"), nullValue());
 
         cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
         assertThat(cache.get("key"), is((Object)"value"));
 
         cache.remove("key");
-        assertThat(cache.get("key"), is(nullValue()));
+        assertThat(cache.get("key"), nullValue());
     }
 
     @Test
@@ -84,8 +82,31 @@ public class SoftReferenceSimpleCacheTest {
 
         Clock.freeze(Clock.currentTimeMillis() + TimeUnit.HOURS.toMillis(1));
 
-    	assertThat(cache.getWithExpiry("key"), is(nullValue()));
-    	assertThat(cache.get("key"), is(nullValue()));
+    	assertThat(cache.getWithExpiry("key"), nullValue());
+    	assertThat(cache.get("key"), nullValue());
+    }
+
+    @Test
+    public void shouldRemove() throws Exception {
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+
+    	cache.remove("key");
+
+    	assertThat(cache.get("key"), nullValue());
+    	assertThat(cache.get("another key"), notNullValue());
+    }
+
+    @Test
+    public void shouldNotRemoveInServeStaleMode() throws Exception {
+        cache.setServeStaleEnabled(true);
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+
+    	cache.remove("key");
+
+    	assertThat(cache.get("key"), notNullValue());
+    	assertThat(cache.get("another key"), notNullValue());
     }
 
     @Test
@@ -95,26 +116,38 @@ public class SoftReferenceSimpleCacheTest {
     	
     	cache.removeAll();
     	
-    	assertThat(cache.get("key"), is(nullValue()));
-    	assertThat(cache.get("another key"), is(nullValue()));
+    	assertThat(cache.get("key"), nullValue());
+    	assertThat(cache.get("another key"), nullValue());
+    }
+
+    @Test
+    public void shouldNotRemoveAllInServeStaleMode() throws Exception {
+        cache.setServeStaleEnabled(true);
+    	cache.putWithExpiry("key", "value", 1, TimeUnit.DAYS);
+    	cache.putWithExpiry("another key", "another value", 1, TimeUnit.DAYS);
+
+    	cache.removeAll();
+
+    	assertThat(cache.get("key"), notNullValue());
+    	assertThat(cache.get("another key"), notNullValue());
     }
 
     @Test
 	public void shouldReturnNullCorrectlyFromGet() {
-		assertThat(cache.get("key"), is(nullValue()));
-		assertThat(cache.getWithExpiry("key"), is(nullValue()));
+		assertThat(cache.get("key"), nullValue());
+		assertThat(cache.getWithExpiry("key"), nullValue());
 	}
 
     @Test
     public void shouldPutAndGetEvenWhenTheValuesAreNotSerlizable() throws Exception {
-        assertThat(cache.get("key"), is(nullValue()));
+        assertThat(cache.get("key"), nullValue());
 
         Object nonSerializable = new Object();
         cache.putWithExpiry("key", nonSerializable, 1, TimeUnit.DAYS);
         assertThat(cache.get("key"), sameInstance(nonSerializable));
 
         cache.remove("key");
-        assertThat(cache.get("key"), is(nullValue()));
+        assertThat(cache.get("key"), nullValue());
     }
 
     @Test

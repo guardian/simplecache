@@ -64,7 +64,9 @@ public abstract class AbstractSimpleCache implements SimpleCache {
         	if (LOG.isDebugEnabled()) {
         		LOG.debug("getWithExpiry(" + key + ") - MISS (removing and ignoring expired entry)");
         	}
-    		//removeDirect(key);
+    		// We don't removeDirect(key) here because the miss will trigger it to be updated and
+            // this recent read means the stale content would have locality anyway. We trust the
+            // underlying cache implementation to handle eviction itself.
             count.miss();
 
     		return null;
@@ -99,22 +101,28 @@ public abstract class AbstractSimpleCache implements SimpleCache {
         count.write();
     }
 
-
     @Override
     public void remove(Object key) {
-    	if (LOG.isTraceEnabled()) {
-    		LOG.trace(String.format("remove(%s)", key) );
-    	}
-        removeDirect(key);
-        count.remove();
+        if (!serveStaleEnabled) {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace(String.format("remove(%s)", key) );
+            }
+            removeDirect(key);
+            count.remove();
+        } else {
+            LOG.debug(String.format("remove(%s) ignored in serve stale mode", key));
+        }
     }
 
     @Override
     public void removeAll() {
-    	LOG.debug("removeAll");
-
-    	removeAllDirect();
-        count.removeAll();
+        if (!serveStaleEnabled) {
+            LOG.debug("removeAll");
+            removeAllDirect();
+            count.removeAll();
+        } else {
+            LOG.debug("removeAll ignored in serve stale mode");
+        }
     }
 
     protected StatisticsCounter getStatisticsCounter() {

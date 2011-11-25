@@ -33,7 +33,10 @@ public class CacheValueWithExpiryTime implements Serializable {
 	}
 
 	public long getInstantaneousSecondsSinceExpiryTime() {
-		return -getInstantaneousSecondsToExpiryTime();
+		final long nowInMillis = Clock.currentTimeMillis();
+		final long relativeExpiryTimeInMillis = nowInMillis - absoluteExpiryTime;
+
+		return TimeUnit.MILLISECONDS.toSeconds(relativeExpiryTimeInMillis);
 	}
 
 	@Override
