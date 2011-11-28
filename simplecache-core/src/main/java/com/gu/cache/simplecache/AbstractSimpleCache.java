@@ -21,10 +21,12 @@ public abstract class AbstractSimpleCache implements SimpleCache {
 		this.name = name;
 	}
 
+    @Override
     public boolean isServeStaleEnabled() {
         return serveStaleEnabled;
     }
 
+    @Override
     public void setServeStaleEnabled(boolean serveStaleEnabled) {
         this.serveStaleEnabled = serveStaleEnabled;
     }

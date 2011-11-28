@@ -41,4 +41,14 @@ public class KeyTranslatorSimpleCacheDecorator implements SimpleCache {
 	public void removeAll() {
 		delegate.removeAll();
 	}
+
+    @Override
+    public boolean isServeStaleEnabled() {
+        return delegate.isServeStaleEnabled();
+    }
+
+    @Override
+    public void setServeStaleEnabled(boolean serveStaleEnabled) {
+        delegate.setServeStaleEnabled(serveStaleEnabled);
+    }
 }

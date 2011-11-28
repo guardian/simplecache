@@ -20,4 +20,7 @@ public interface SimpleCache {
     void remove(Object key);
 
     void removeAll();
+
+    boolean isServeStaleEnabled();
+    void setServeStaleEnabled(boolean serveStaleEnabled);
 }

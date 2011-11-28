@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -19,15 +20,16 @@ import org.mockito.MockitoAnnotations;
 import com.gu.cache.simplecache.CacheValueWithExpiryTime;
 import com.gu.cache.simplecache.SimpleCache;
 import com.gu.cache.simplecache.TwoLevelSimpleCacheAggregator;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TwoLevelSimpleCacheAggregatorTest {
-    @Mock private SimpleCache firstLevelCache;
-    @Mock private SimpleCache secondLevelCache;
+    @Mock private SoftReferenceSimpleCache firstLevelCache;
+    @Mock private SoftReferenceSimpleCache secondLevelCache;
     private TwoLevelSimpleCacheAggregator cache;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         cache = new TwoLevelSimpleCacheAggregator(firstLevelCache, secondLevelCache);
     }
 
@@ -62,11 +64,10 @@ public class TwoLevelSimpleCacheAggregatorTest {
         assertThat(cache.get("key"), nullValue());
 
         verify(firstLevelCache, never()).putWithExpiry("key", null, 1, TimeUnit.DAYS);
-
     }
 
     @Test
-    public void putWithExprityShouldPutToBothLevelCaches() throws Exception {
+    public void putWithExpiryShouldPutToBothLevelCaches() throws Exception {
         cache.putWithExpiry("key", "value", 5, TimeUnit.HOURS);
 
         verify(firstLevelCache).putWithExpiry("key", "value", 5, TimeUnit.HOURS);
@@ -98,7 +99,7 @@ public class TwoLevelSimpleCacheAggregatorTest {
     
     @Test
     public void shouldMissAndNotPromoteFromSecondLevelCacheWithZeroExpiryTime() {
-    	// Cause you may make it eternal in the first level cache.
+    	// Because in certain implementation you may make it eternal in the first level cache.
 	    CacheValueWithExpiryTime valueObject = mock(CacheValueWithExpiryTime.class);
 	    when(valueObject.getInstantaneousSecondsToExpiryTime()).thenReturn(0L);
 	    when(valueObject.getValue()).thenReturn("value");
@@ -123,6 +124,74 @@ public class TwoLevelSimpleCacheAggregatorTest {
     	assertThat(cache.get("key"), nullValue());
 
     	verify(firstLevelCache, never()).putWithExpiry(anyString(), anyString(), anyInt(), argThat(is(TimeUnit.SECONDS)));
+    }
+
+    @Test
+    public void shouldEnableServeStaleStateOnBothCaches() {
+        cache.setServeStaleEnabled(true);
+
+    	verify(firstLevelCache).setServeStaleEnabled(true);
+    	verify(secondLevelCache).setServeStaleEnabled(true);
+    }
+
+    @Test
+    public void shouldDisableServeStaleStateOnBothCaches() {
+        cache.setServeStaleEnabled(false);
+
+    	verify(firstLevelCache).setServeStaleEnabled(false);
+    	verify(secondLevelCache).setServeStaleEnabled(false);
+    }
+
+    @Test
+    public void shouldNotRemoveIfServeStaleEnabled() {
+        cache.setServeStaleEnabled(true);
+
+        cache.remove("value");
+
+    	verify(firstLevelCache, never()).remove(anyObject());
+    	verify(secondLevelCache, never()).remove(anyObject());
+    }
+
+    @Test
+    public void shouldNotRemoveAllIfServeStaleEnabled() {
+        cache.setServeStaleEnabled(true);
+
+        cache.removeAll();
+
+    	verify(firstLevelCache, never()).removeAll();
+    	verify(secondLevelCache, never()).removeAll();
+    }
+
+    @Test
+    public void shouldNotDecaySecondLevelCacheValuesInServeStaleMode() {
+        cache.setServeStaleEnabled(true);
+        cache.setMinTtlForPromotion(5);
+
+        CacheValueWithExpiryTime valueObject = mock(CacheValueWithExpiryTime.class);
+	    when(valueObject.getInstantaneousSecondsToExpiryTime()).thenReturn(-600L);
+	    when(valueObject.getValue()).thenReturn("value");
+
+	    when(firstLevelCache.getWithExpiry("key")).thenReturn(null);
+	    when(secondLevelCache.getWithExpiry("key")).thenReturn(valueObject);
+
+        assertThat(cache.get("key"), is(valueObject.getValue()));
+    }
+
+    @Test
+    public void shouldPromoteDecayedSecondLevelCacheValuesInServeStaleMode() {
+        cache.setServeStaleEnabled(true);
+        cache.setMinTtlForPromotion(5);
+
+        CacheValueWithExpiryTime valueObject = mock(CacheValueWithExpiryTime.class);
+	    when(valueObject.getInstantaneousSecondsToExpiryTime()).thenReturn(-600L);
+	    when(valueObject.getValue()).thenReturn("value");
+
+	    when(firstLevelCache.getWithExpiry("key")).thenReturn(null);
+	    when(secondLevelCache.getWithExpiry("key")).thenReturn(valueObject);
+
+        cache.get("key");
+
+        verify(firstLevelCache).putWithExpiry("key", "value", -600, TimeUnit.SECONDS);
     }
 
 }
