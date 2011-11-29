@@ -1,6 +1,6 @@
 name := "simplecache-core"
 
-version := "2.2-SNAPSHOT"
+version := "2.3-SNAPSHOT"
 
 organization := "com.gu"
 
