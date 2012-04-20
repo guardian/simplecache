@@ -1,6 +1,6 @@
 package com.gu.cache.memcached;
 
-import com.gu.management.timing.TimingMetric;
+import com.gu.management.TimingMetric;
 import net.spy.memcached.ConnectionFactory;
 import net.spy.memcached.MemcachedClient;
 import org.apache.log4j.Logger;
