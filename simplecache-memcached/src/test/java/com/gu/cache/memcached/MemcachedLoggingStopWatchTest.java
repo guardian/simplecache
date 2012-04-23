@@ -1,6 +1,6 @@
 package com.gu.cache.memcached;
 
-import com.gu.management.timing.TimingMetric;
+import com.gu.management.TimingMetric;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
