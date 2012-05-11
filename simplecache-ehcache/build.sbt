@@ -1,6 +1,6 @@
 name := "simplecache-ehcache"
 
-version := "2.4-SNAPSHOT"
+version := "2.5-SNAPSHOT"
 
 organization := "com.gu"
 
