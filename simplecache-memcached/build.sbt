@@ -1,6 +1,6 @@
 name := "simplecache-memcached"
 
-version := "2.4-SNAPSHOT"
+version := "2.4"
 
 organization := "com.gu"
 
