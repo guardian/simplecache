@@ -1,8 +1,10 @@
 name := "simplecache-all"
 
-version := "2.5-SNAPSHOT"
+version := "2.5"
 
 organization := "com.gu"
+
+scalaVersion := "2.9.2"
 
 publishTo <<= (version) { version: String =>
     val publishType = if (version.endsWith("SNAPSHOT")) "snapshots" else "releases"
@@ -18,4 +20,4 @@ maxErrors := 20
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6")
 
-crossPaths := false
+crossPaths := true

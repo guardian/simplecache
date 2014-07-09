@@ -1,8 +1,10 @@
 name := "simplecache-spring-memcached"
 
-version := "2.5-SNAPSHOT"
+version := "2.5"
 
 organization := "com.gu"
+
+scalaVersion := "2.9.2"
 
 resolvers ++= Seq(
   "Guardian GitHub" at "http://guardian.github.com/maven/repo-releases",
@@ -22,7 +24,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.hamcrest" % "hamcrest-all" % "1.1" % "test",
-  "org.mockito" % "mockito-all" % "1.8.5" % "test",
+  "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "junit" % "junit" % "4.4" % "test",
   "com.novocode" % "junit-interface" % "0.6" % "test"
 )
@@ -41,4 +43,4 @@ maxErrors := 20
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint:deprecation")
 
-crossPaths := false
+crossPaths := true
