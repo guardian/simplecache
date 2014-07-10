@@ -41,6 +41,8 @@ publishTo <<= (version) { version: String =>
 
 maxErrors := 20
 
-javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint:deprecation")
+javacOptions in (Compile, compile) ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint:deprecation")
+
+javacOptions in doc := Seq("-source", "1.6")
 
 crossPaths := true
