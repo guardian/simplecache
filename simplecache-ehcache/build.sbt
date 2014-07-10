@@ -1,6 +1,8 @@
 name := "simplecache-ehcache"
 
-version := "2.5-SNAPSHOT"
+version := "2.5"
+
+scalaVersion := "2.9.2"
 
 organization := "com.gu"
 
@@ -16,7 +18,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.hamcrest" % "hamcrest-all" % "1.1" % "test",
-  "org.mockito" % "mockito-all" % "1.8.5" % "test",
+  "org.mockito" % "mockito-all" % "1.9.5" % "test",
   "junit" % "junit" % "4.4" % "test",
   "com.novocode" % "junit-interface" % "0.6" % "test"
 )
@@ -35,4 +37,4 @@ maxErrors := 20
 
 javacOptions ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint:deprecation")
 
-crossPaths := false
+crossPaths := true
