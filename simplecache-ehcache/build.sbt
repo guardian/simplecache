@@ -1,6 +1,6 @@
 name := "simplecache-ehcache"
 
-version := "2.5"
+version := "2.5.1"
 
 scalaVersion := "2.9.2"
 
