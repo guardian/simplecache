@@ -1,15 +1,6 @@
 name := "simplecache-memcached"
 
-version := "2.5.1"
-
-organization := "com.gu"
-
-scalaVersion := "2.9.2"
-
-resolvers ++= Seq(
-  "Guardian GitHub" at "http://guardian.github.com/maven/repo-releases",
-  "Spy Memcached" at "http://files.couchbase.com/maven2"
-)
+resolvers += "Spy Memcached" at "http://files.couchbase.com/maven2"
 
 libraryDependencies ++= Seq(
   "spy" % "spymemcached" % "2.7.3",
@@ -26,21 +17,3 @@ libraryDependencies ++= Seq(
   "junit" % "junit" % "4.4" % "test",
   "com.novocode" % "junit-interface" % "0.6" % "test"
 )
-
-publishTo <<= (version) { version: String =>
-    val publishType = if (version.endsWith("SNAPSHOT")) "snapshots" else "releases"
-    Some(
-        Resolver.file(
-            "guardian github " + publishType,
-            file(System.getProperty("user.home") + "/guardian.github.com/maven/repo-" + publishType)
-        )
-    )
-}
-
-maxErrors := 20
-
-javacOptions in (Compile, compile) ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint:deprecation")
-
-javacOptions in doc := Seq("-source", "1.6")
-
-crossPaths := true
