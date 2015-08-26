@@ -11,7 +11,7 @@ object SimpleCacheBuild extends Build {
 
   lazy val commonSettings = Seq(
     organization := "com.gu",
-    version := "2.6.0",
+    version := "3.0.0",
 
     scalaVersion := "2.11.7",
     crossScalaVersions := Seq("2.11.7"),
