@@ -11,14 +11,14 @@ object SimpleCacheBuild extends Build {
 
   lazy val commonSettings = Seq(
     organization := "com.gu",
-    version := "2.5.2",
+    version := "2.6.0",
 
-    scalaVersion := "2.9.2",
-    crossScalaVersions := Seq("2.9.2", "2.10.4"),
+    scalaVersion := "2.11.7",
+    crossScalaVersions := Seq("2.11.7"),
     crossPaths := true,
 
-    javacOptions in (Compile, compile) ++= Seq("-source", "1.6", "-target", "1.6", "-Xlint:deprecation"),
-    javacOptions in doc := Seq("-source", "1.6"),
+    javacOptions in (Compile, compile) ++= Seq("-source", "1.7", "-target", "1.7", "-Xlint:deprecation"),
+    javacOptions in doc := Seq("-source", "1.7"),
 
     resolvers += "Guardian GitHub" at "http://guardian.github.com/maven/repo-releases",
 
