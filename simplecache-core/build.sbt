@@ -3,7 +3,7 @@ name := "simplecache-core"
 libraryDependencies ++= Seq(
   "commons-lang" % "commons-lang" % "2.4",
   "commons-codec" % "commons-codec" % "1.3",
-  "com.gu" %% "management" % "5.27",
+  "com.gu" %% "management" % "5.35",
   "com.gu" % "option" % "1.2",
   "com.google.collections" % "google-collections" % "1.0-rc2",
   "log4j" % "log4j" % "1.2.14"
